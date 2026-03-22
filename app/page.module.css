@@ -10,23 +10,29 @@
   --button-secondary-border: #ebebeb;
 
   display: flex;
-  min-height: 100vh;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  box-sizing: border-box;
+  min-height: 100dvh;
+  height: 100dvh;
+  max-height: 100dvh;
+  overflow: hidden;
+  align-items: stretch;
+  justify-content: flex-start;
   font-family: var(--font-geist-sans);
   background-color: var(--background);
 }
 
 .main {
   display: flex;
-  min-height: 100vh;
+  flex: 1;
+  min-height: 0;
   width: 100%;
-  max-width: 800px;
   flex-direction: column;
-  align-items: flex-start;
-  justify-content: space-between;
+  align-items: stretch;
+  justify-content: flex-start;
   background-color: var(--foreground);
-  padding: 120px 60px;
+  padding: clamp(12px, 2.5vw, 28px) clamp(16px, 4vw, 48px);
+  box-sizing: border-box;
 }
 
 .intro {
@@ -83,6 +89,64 @@
   font-weight: 500;
 }
 
+.calendarContainer {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, min(32vw, 360px));
+  grid-template-rows: auto minmax(0, 1fr);
+  column-gap: clamp(16px, 2vw, 24px);
+  row-gap: clamp(12px, 2vw, 20px);
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  align-items: stretch;
+}
+
+.pageHeader {
+  grid-column: 1;
+  grid-row: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-width: 0;
+}
+
+.calendarCell {
+  grid-column: 1;
+  grid-row: 2;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.title {
+  margin: 0;
+  font-size: 40px;
+  font-weight: 600;
+  line-height: 48px;
+  letter-spacing: -2.4px;
+  text-wrap: balance;
+  color: var(--text-primary);
+}
+
+.mainRightContainer {
+  grid-column: 2;
+  grid-row: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: clamp(12px, 2vw, 20px);
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
 a.primary {
   background: var(--text-primary);
   color: var(--background);
@@ -106,9 +170,32 @@ a.secondary {
   }
 }
 
+@media (max-width: 960px) {
+  .calendarContainer {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto minmax(0, 1fr);
+  }
+
+  .pageHeader {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .mainRightContainer {
+    grid-column: 1;
+    grid-row: 2;
+    max-width: 100%;
+  }
+
+  .calendarCell {
+    grid-column: 1;
+    grid-row: 3;
+  }
+}
+
 @media (max-width: 600px) {
   .main {
-    padding: 48px 24px;
+    padding: 12px 16px;
   }
 
   .intro {
@@ -119,6 +206,17 @@ a.secondary {
     font-size: 32px;
     line-height: 40px;
     letter-spacing: -1.92px;
+  }
+
+  .title {
+    font-size: clamp(22px, 6vw, 32px);
+    line-height: 1.2;
+    letter-spacing: -1.92px;
+  }
+
+  .pageHeader {
+    flex-wrap: wrap;
+    align-items: center;
   }
 }
 

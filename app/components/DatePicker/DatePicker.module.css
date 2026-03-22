@@ -1,0 +1,56 @@
+.root {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid var(--dp-border, #ebebeb);
+  border-radius: 10px;
+  background: var(--dp-bg, #fff);
+  color: var(--dp-fg, #111);
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--dp-focus, #111);
+  outline-offset: 2px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .button:hover {
+    background: var(--dp-hover-bg, #f7f7f7);
+    border-color: var(--dp-hover-border, #e0e0e0);
+  }
+
+  .button:active {
+    background: var(--dp-active-bg, #f0f0f0);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .root {
+    --dp-border: #2a2a2a;
+    --dp-bg: #141414;
+    --dp-fg: #ededed;
+    --dp-hover-bg: #1a1a1a;
+    --dp-hover-border: #333;
+    --dp-active-bg: #222;
+    --dp-focus: #ededed;
+  }
+}
