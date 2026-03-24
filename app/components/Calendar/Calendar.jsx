@@ -53,15 +53,13 @@ const getStartOfWeek = (date) => {
 const CalendarComponent = () => {
   // const [selectedDate, setSelectedDate] = useState(new Date());
   const selectedDate = useCalander((state) => state.selectedDate);
+  const [expandedCellKey, setExpandedCellKey] = useState(null);
+  const [hoveredCellKey, setHoveredCellKey] = useState(null);
   // const [userData, setUserData] = useState([]);
   const userData = useUser((state) => state.users);
   const setUserData = useUser((state) => state.setUsers);
   const selectedIds = useCalander((state) => state.selectedIds);
   const updateSelectedIds = useCalander((state) => state.updateSelectedIds);
-  const timeBackgroundColor = useCalander((state) => state.timeBackgroundColor);
-  const addTimeBackgroundColor = useCalander(
-    (state) => state.addTimeBackgroundColor,
-  );
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -82,40 +80,30 @@ const CalendarComponent = () => {
   }, [selectedDate]);
 
   const getUserData = (cellKey) => {
-    let userLength = 0;
-    const user = userData.map((user) => {
-      return user.schedule.map((schedule) => {
+    const matchedUsers = [];
+
+    userData.forEach((user) => {
+      user.schedule.forEach((schedule) => {
         if (isTimeInRange(cellKey, schedule.start_time)) {
           const userName = user.user_name || "";
           const initial = (userName && userName[0]) || "?";
           const backgroundColor = getColorForUser(userName);
-          userLength++;
-
-          if (userLength > 3) return null;
-
-          return (
-            <div
-              key={`${userName}-${schedule.start_time}-${cellKey}`}
-              className={
-                selectedIds.includes(schedule.id)
-                  ? styles.userEmojiSelected
-                  : styles.userEmoji
-              }
-              style={{
-                backgroundColor,
-              }}
-              onClick={() => updateSelectedIds(schedule.id)}
-            >
-              {initial.toUpperCase()}
-            </div>
-          );
+          matchedUsers.push({
+            id: schedule.id,
+            key: `${userName}-${schedule.start_time}-${cellKey}`,
+            initial: initial.toUpperCase(),
+            backgroundColor,
+          });
         }
-        return null;
       });
     });
+    const userLength = matchedUsers.length;
+    const isExpanded =
+      expandedCellKey === cellKey || hoveredCellKey === cellKey;
+    const visibleUsers = isExpanded ? matchedUsers : matchedUsers.slice(0, 3);
 
     let timeBG = "";
-    const bgPercentage = userLength / user.length;
+    const bgPercentage = userLength / userData.length;
 
     if (bgPercentage >= 0.8) {
       timeBG = TIME_BACKGROUND_COLOR[2];
@@ -128,16 +116,58 @@ const CalendarComponent = () => {
     return (
       <td
         key={cellKey}
-        className={styles.dayCell}
+        className={`${styles.dayCell} ${isExpanded ? styles.dayCellExpanded : ""}`}
         style={{
           border: "1px solid #f1f1f1",
           height: "clamp(26px, 4vw, 32px)",
           cursor: "pointer",
           backgroundColor: userLength >= 1 ? timeBG : "",
         }}
+        tabIndex={userLength > 3 ? 0 : -1}
+        onMouseEnter={() => {
+          if (userLength > 3) setHoveredCellKey(cellKey);
+        }}
+        onMouseLeave={() => {
+          setHoveredCellKey((prev) => (prev === cellKey ? null : prev));
+        }}
+        onFocus={() => {
+          if (userLength > 3) setExpandedCellKey(cellKey);
+        }}
+        onBlur={(e) => {
+          if (!e.currentTarget.contains(e.relatedTarget)) {
+            setExpandedCellKey((prev) => (prev === cellKey ? null : prev));
+          }
+        }}
+        onKeyDown={(e) => {
+          if (userLength <= 3) return;
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            setExpandedCellKey(cellKey);
+          }
+          if (e.key === "Escape") {
+            setExpandedCellKey((prev) => (prev === cellKey ? null : prev));
+          }
+        }}
       >
-        {user}
-        {userLength > 3 && (
+        <div className={styles.dayCellContent}>
+          {visibleUsers.map((member) => (
+            <div
+              key={member.key}
+              className={
+                selectedIds.includes(member.id)
+                  ? styles.userEmojiSelected
+                  : styles.userEmoji
+              }
+              style={{
+                backgroundColor: member.backgroundColor,
+              }}
+              onClick={() => updateSelectedIds(member.id)}
+            >
+              {member.initial}
+            </div>
+          ))}
+        </div>
+        {userLength > 3 && !isExpanded && (
           <span key="more" className={styles.extraUsers}>
             + {userLength - 3}명
           </span>
