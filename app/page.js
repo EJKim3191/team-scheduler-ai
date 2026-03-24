@@ -4,6 +4,7 @@ import CalendarComponent from "./components/Calendar/Calendar";
 import ChatComponent from "./components/Chat/Chat";
 import TeamMateComponent from "./components/TeamMate/TeamMate";
 import DatePickerComponent from "./components/DatePicker/DatePicker";
+import Footer from "./components/Footer/Footer";
 
 export default function Home() {
   return (
@@ -23,6 +24,7 @@ export default function Home() {
           </div>
         </div>
       </main>
+      <Footer />
     </div>
   );
 }
