@@ -17,7 +17,9 @@ const useCalander = create((set) => ({
       };
     });
   },
-
+  clearSelectedIds: () => {
+    set({ selectedIds: [] });
+  },
   addTimeBackgroundColor: (cellKey) => {
     set((state) => {
       const isIncluded = Object.keys(state.timeBackgroundColor).includes(

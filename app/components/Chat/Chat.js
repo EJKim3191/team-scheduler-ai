@@ -12,6 +12,7 @@ const ChatComponent = () => {
   const [password, setPassword] = useState("");
   const selectedIds = useCalander((state) => state.selectedIds);
   const setUserData = useUser((state) => state.setUsers);
+  const clearSelectedIds = useCalander((state) => state.clearSelectedIds);
 
   const fetchUserData = async () => {
     const response = await fetch("/api/calendar");
@@ -79,6 +80,13 @@ const ChatComponent = () => {
         selectedIds,
       }),
     });
+
+    if (response.ok) {
+      alert("삭제되었습니다");
+      clearSelectedIds();
+    } else {
+      alert("삭제 실패");
+    }
     fetchUserData();
   };
 
