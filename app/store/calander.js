@@ -3,6 +3,7 @@ import { create } from "zustand";
 const useCalander = create((set) => ({
   selectedIds: [],
   selectedDate: new Date(),
+  timeBackgroundColor: {},
   setSelectedDate: (date) => {
     set({ selectedDate: date });
   },
@@ -13,6 +14,22 @@ const useCalander = create((set) => ({
         selectedIds: isIncluded
           ? state.selectedIds.filter((el) => el !== id)
           : [...state.selectedIds, id],
+      };
+    });
+  },
+
+  addTimeBackgroundColor: (cellKey) => {
+    set((state) => {
+      const isIncluded = Object.keys(state.timeBackgroundColor).includes(
+        cellKey,
+      );
+      return {
+        timeBackgroundColor: isIncluded
+          ? {
+              ...state.timeBackgroundColor,
+              [cellKey]: state.timeBackgroundColor[cellKey] + 1,
+            }
+          : { ...state.timeBackgroundColor, [cellKey]: 1 },
       };
     });
   },

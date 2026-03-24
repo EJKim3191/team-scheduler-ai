@@ -1,7 +1,8 @@
 // 캘린더 컴포넌트 --> react-calendar 라이브러리 사용, 결과값만 보여주는 컴포넌트
+// TODO: decompose this component
 "use client";
 
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import Calendar from "react-calendar";
 import { createClient } from "@/lib/supabase/server";
 import { isTimeInRange } from "@/utils/timeStamp";
@@ -25,6 +26,8 @@ const USER_COLORS = [
   "#0EA5E9", // sky
 ];
 
+const TIME_BACKGROUND_COLOR = ["", "	#F5DEB3", "#C4E1A6"];
+
 const getColorForUser = (name = "") => {
   if (!name) return USER_COLORS[0];
   let hash = 0;
@@ -35,6 +38,9 @@ const getColorForUser = (name = "") => {
   return USER_COLORS[index];
 };
 
+const getBackgroundColor = (cellKey) => {
+  return;
+};
 const getStartOfWeek = (date) => {
   const d = new Date(date);
   const day = d.getDay(); // 0 (일) ~ 6 (토)
@@ -52,6 +58,10 @@ const CalendarComponent = () => {
   const setUserData = useUser((state) => state.setUsers);
   const selectedIds = useCalander((state) => state.selectedIds);
   const updateSelectedIds = useCalander((state) => state.updateSelectedIds);
+  const timeBackgroundColor = useCalander((state) => state.timeBackgroundColor);
+  const addTimeBackgroundColor = useCalander(
+    (state) => state.addTimeBackgroundColor,
+  );
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -70,6 +80,71 @@ const CalendarComponent = () => {
       return d;
     });
   }, [selectedDate]);
+
+  const getUserData = (cellKey) => {
+    let userLength = 0;
+    const user = userData.map((user) => {
+      return user.schedule.map((schedule) => {
+        if (isTimeInRange(cellKey, schedule.start_time)) {
+          const userName = user.user_name || "";
+          const initial = (userName && userName[0]) || "?";
+          const backgroundColor = getColorForUser(userName);
+          userLength++;
+
+          if (userLength > 3) return null;
+
+          return (
+            <div
+              key={`${userName}-${schedule.start_time}-${cellKey}`}
+              className={
+                selectedIds.includes(schedule.id)
+                  ? styles.userEmojiSelected
+                  : styles.userEmoji
+              }
+              style={{
+                backgroundColor,
+              }}
+              onClick={() => updateSelectedIds(schedule.id)}
+            >
+              {initial.toUpperCase()}
+            </div>
+          );
+        }
+        return null;
+      });
+    });
+
+    let timeBG = "";
+    const bgPercentage = userLength / user.length;
+
+    if (bgPercentage >= 0.8) {
+      timeBG = TIME_BACKGROUND_COLOR[2];
+    } else if (bgPercentage >= 0.5) {
+      timeBG = TIME_BACKGROUND_COLOR[1];
+    } else if (bgPercentage >= 0.2) {
+      timeBG = TIME_BACKGROUND_COLOR[0];
+    }
+
+    return (
+      <td
+        key={cellKey}
+        className={styles.dayCell}
+        style={{
+          border: "1px solid #f1f1f1",
+          height: "clamp(26px, 4vw, 32px)",
+          cursor: "pointer",
+          backgroundColor: userLength >= 1 ? timeBG : "",
+        }}
+      >
+        {user}
+        {userLength > 3 && (
+          <span key="more" className={styles.extraUsers}>
+            + {userLength - 3}명
+          </span>
+        )}
+      </td>
+    );
+  };
 
   return (
     <div className={styles.calendarRoot}>
@@ -127,45 +202,7 @@ const CalendarComponent = () => {
                 </td>
                 {weekDays.map((day) => {
                   const cellKey = `${day.toDateString()}-${hour}`;
-                  return (
-                    <td
-                      key={cellKey}
-                      className={styles.dayCell}
-                      style={{
-                        border: "1px solid #f1f1f1",
-                        height: "clamp(26px, 4vw, 32px)",
-                        cursor: "pointer",
-                      }}
-                    >
-                      {/* {hour} */}
-                      {userData.map((user) => {
-                        return user.schedule.map((schedule) => {
-                          if (isTimeInRange(cellKey, schedule.start_time)) {
-                            const userName = user.user_name || "";
-                            const initial = (userName && userName[0]) || "?";
-                            const backgroundColor = getColorForUser(userName);
-                            return (
-                              <div
-                                key={`${userName}-${schedule.start_time}-${cellKey}`}
-                                className={
-                                  selectedIds.includes(schedule.id)
-                                    ? styles.userEmojiSelected
-                                    : styles.userEmoji
-                                }
-                                style={{
-                                  backgroundColor,
-                                }}
-                                onClick={() => updateSelectedIds(schedule.id)}
-                              >
-                                {initial.toUpperCase()}
-                              </div>
-                            );
-                          }
-                          return null;
-                        });
-                      })}
-                    </td>
-                  );
+                  return getUserData(cellKey);
                 })}
               </tr>
             ))}

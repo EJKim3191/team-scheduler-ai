@@ -28,6 +28,10 @@
   overflow: hidden;
 }
 
+.dayCell {
+  white-space: nowrap;
+}
+
 .userEmoji {
   width: 28px;
   height: 28px;
@@ -53,4 +57,14 @@
   font-weight: 600;
   margin-right: 4px;
   opacity: 0.4;
+}
+
+.extraUsers {
+  display: inline-block;
+  color: #9ca3af;
+  font-size: clamp(9px, 1.5vw, 11px);
+  line-height: 1;
+  margin-left: 2px;
+  vertical-align: middle;
+  white-space: nowrap;
 }
