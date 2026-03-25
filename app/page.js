@@ -3,6 +3,7 @@ import styles from "./page.module.css";
 import CalendarComponent from "./components/Calendar/Calendar";
 import ChatComponent from "./components/Chat/Chat";
 import TeamMateComponent from "./components/TeamMate/TeamMate";
+import GradientBar from "./components/GradientBar/GradientBar";
 import DatePickerComponent from "./components/DatePicker/DatePicker";
 import Footer from "./components/Footer/Footer";
 
@@ -19,6 +20,7 @@ export default function Home() {
             <CalendarComponent />
           </div>
           <div className={styles.mainRightContainer}>
+            <GradientBar />
             <TeamMateComponent />
             <ChatComponent />
           </div>

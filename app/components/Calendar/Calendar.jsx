@@ -26,7 +26,7 @@ const USER_COLORS = [
   "#0EA5E9", // sky
 ];
 
-const TIME_BACKGROUND_COLOR = ["", "	#F5DEB3", "#C4E1A6"];
+const TIME_BACKGROUND_COLOR = ["", "	#F5DEB3", "#f6c1a3", "#C4E1A6"];
 
 const getColorForUser = (name = "") => {
   if (!name) return USER_COLORS[0];
@@ -104,12 +104,13 @@ const CalendarComponent = () => {
 
     let timeBG = "";
     const bgPercentage = userLength / userData.length;
-
-    if (bgPercentage >= 0.8) {
-      timeBG = TIME_BACKGROUND_COLOR[2];
+    if (bgPercentage >= 1) {
+      timeBG = TIME_BACKGROUND_COLOR[3];
     } else if (bgPercentage >= 0.5) {
+      timeBG = TIME_BACKGROUND_COLOR[2];
+    } else if (bgPercentage >= 0.8) {
       timeBG = TIME_BACKGROUND_COLOR[1];
-    } else if (bgPercentage >= 0.2) {
+    } else if (bgPercentage >= 0.5) {
       timeBG = TIME_BACKGROUND_COLOR[0];
     }
 
