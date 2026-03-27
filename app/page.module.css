@@ -121,6 +121,14 @@
   -webkit-overflow-scrolling: touch;
 }
 
+.profileHeader {
+  grid-column: 2;
+  grid-row: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
 .title {
   margin: 0;
   font-size: 40px;
@@ -173,7 +181,7 @@ a.secondary {
 @media (max-width: 960px) {
   .calendarContainer {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: auto auto minmax(0, 1fr);
+    grid-template-rows: auto auto auto minmax(0, 1fr);
   }
 
   .pageHeader {
@@ -183,13 +191,19 @@ a.secondary {
 
   .mainRightContainer {
     grid-column: 1;
-    grid-row: 2;
+    grid-row: 3;
     max-width: 100%;
+  }
+
+  .profileHeader {
+    grid-column: 1;
+    grid-row: 2;
+    justify-content: flex-start;
   }
 
   .calendarCell {
     grid-column: 1;
-    grid-row: 3;
+    grid-row: 4;
   }
 }
 

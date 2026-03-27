@@ -4,9 +4,12 @@ import styles from "./Login.module.css";
 import { useState } from "react";
 import SignUpPage from "./SignUp";
 import { useRouter } from "next/navigation";
+import useTeam from "@/app/store/team";
 
 function LoginPage() {
   const router = useRouter();
+  const setTeamCode = useTeam((state) => state.setTeamCode);
+  const setTeamName = useTeam((state) => state.setTeamName);
 
   const [id, setId] = useState("");
   const [password, setPassword] = useState("");
@@ -33,6 +36,8 @@ function LoginPage() {
     if (data.success) {
       // localStorage.setItem("user_id", data.id);
       setCookie("sb-access-token", data.id);
+      setTeamCode(data.teamCode);
+      setTeamName(data.teamName);
       router.push("/");
     } else {
       alert(data.message);

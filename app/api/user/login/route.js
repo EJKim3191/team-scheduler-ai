@@ -5,21 +5,41 @@ async function signInUser(userName, password) {
   const supabase = await createClient();
   const response = await supabase
     .from("profiles")
-    .select("id")
+    .select("id, team_id")
     .eq("user_id", userName)
     .eq("password", password.toString());
+
   console.log("response1", response);
+
   if (response.data.length === 0) {
     return null;
   }
-  return { success: true, id: response.data[0].id };
+
+  const teamResponse = await supabase
+    .from("team")
+    .select("team_code, team_name")
+    .eq("team_id", response.data[0].team_id);
+
+  console.log("teamResponse", teamResponse);
+
+  return {
+    success: true,
+    id: response.data[0].id,
+    teamName: teamResponse.data[0].team_name,
+    teamCode: teamResponse.data[0].team_code,
+  };
 }
 
 async function POST(req) {
   const { userName, password } = await req.json();
   const response = await signInUser(userName, password);
-  console.log("response2", response);
-  return NextResponse.json({ success: true, id: response.id });
+
+  return NextResponse.json({
+    success: true,
+    id: response.id,
+    teamName: response.teamName,
+    teamCode: response.teamCode,
+  });
 }
 
 export { POST };
