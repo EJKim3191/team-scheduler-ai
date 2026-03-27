@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-export function middleware(request) {
+export function proxy(request) {
   // 1. 쿠키나 로컬 스토리지 대신 사용할 인증 키 확인
   // 보통 Supabase나 직접 만든 인증 시스템은 쿠키에 토큰을 저장합니다.
   const token = request.cookies.get("sb-access-token"); // 토큰 이름은 설정에 따라 다름
