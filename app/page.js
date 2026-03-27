@@ -6,8 +6,15 @@ import TeamMateComponent from "./components/TeamMate/TeamMate";
 import GradientBar from "./components/GradientBar/GradientBar";
 import DatePickerComponent from "./components/DatePicker/DatePicker";
 import Footer from "./components/Footer/Footer";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
-export default function Home() {
+export default async function Home() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("sb-access-token");
+  if (!token) {
+    redirect("/login");
+  }
   return (
     <div className={styles.page}>
       <main className={styles.main}>
