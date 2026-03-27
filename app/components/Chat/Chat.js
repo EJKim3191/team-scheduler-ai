@@ -6,6 +6,11 @@ import styles from "./Chat.module.css";
 import useCalander from "@/app/store/calander";
 import useUser from "@/app/store/user";
 
+function getCookie(name) {
+  var value = document.cookie.match("(^|;) ?" + name + "=([^;]*)(;|$)");
+  return value ? unescape(value[2]) : null;
+}
+
 const ChatComponent = () => {
   const [message, setMessage] = useState("");
   const [userName, setUserName] = useState("");
@@ -15,9 +20,12 @@ const ChatComponent = () => {
   const clearSelectedIds = useCalander((state) => state.clearSelectedIds);
 
   const fetchUserData = async () => {
-    const response = await fetch("/api/calendar");
+    const response = await fetch("/api/calendar/user", {
+      method: "POST",
+      // body: JSON.stringify({ token: localStorage.getItem("user_id") }),
+      body: JSON.stringify({ token: getCookie("sb-access-token") }),
+    });
     const data = await response.json();
-
     setUserData(data.response);
   };
 

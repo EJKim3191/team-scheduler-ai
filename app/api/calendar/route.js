@@ -1,23 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 const { NextResponse } = require("next/server");
 
-async function getUserData() {
-  const calenderData = [];
-  const supabase = await createClient();
-  const { data: profiles } = await supabase.from("profiles").select();
-
-  for (const profile of profiles) {
-    const { data: schedule, error } = await supabase
-      .from("user_schedules")
-      .select("*")
-      .eq("profile_id", profile.id);
-
-    calenderData.push({ user_name: profile.user_name, schedule });
-  }
-
-  return calenderData;
-}
-
 async function deleteUserDataById(ids) {
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -45,12 +28,6 @@ async function addUserData(scheduleData) {
   return { data, error };
 }
 
-async function GET(req) {
-  const response = await getUserData();
-
-  return NextResponse.json({ response });
-}
-
 async function POST(req) {
   const scheduleData = await req.json();
   const response = await addUserData(scheduleData);
@@ -65,4 +42,4 @@ async function DELETE(req) {
   return NextResponse.json({ response });
 }
 
-export { GET, DELETE, POST };
+export { DELETE, POST };

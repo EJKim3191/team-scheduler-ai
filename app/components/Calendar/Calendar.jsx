@@ -50,6 +50,11 @@ const getStartOfWeek = (date) => {
   return d;
 };
 
+function getCookie(name) {
+  var value = document.cookie.match("(^|;) ?" + name + "=([^;]*)(;|$)");
+  return value ? unescape(value[2]) : null;
+}
+
 const CalendarComponent = () => {
   // const [selectedDate, setSelectedDate] = useState(new Date());
   const selectedDate = useCalander((state) => state.selectedDate);
@@ -63,7 +68,11 @@ const CalendarComponent = () => {
 
   useEffect(() => {
     const fetchUserData = async () => {
-      const response = await fetch("/api/calendar");
+      const response = await fetch("/api/calendar/user", {
+        method: "POST",
+        // body: JSON.stringify({ token: localStorage.getItem("user_id") }),
+        body: JSON.stringify({ token: getCookie("sb-access-token") }),
+      });
       const data = await response.json();
       setUserData(data.response);
     };
