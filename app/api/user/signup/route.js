@@ -7,7 +7,7 @@ async function checkUser(id) {
     .from("profiles")
     .select("id")
     .eq("user_id", id);
-  console.log("checkUser", response);
+
   if (response.data && response.data.length === 0) {
     return { success: true, message: "사용 가능한 아이디입니다." };
   }
@@ -22,7 +22,7 @@ async function createTeam(teamCode) {
       team_code: teamCode,
     })
     .select();
-  console.log("createTeam", response);
+
   if (response.error) {
     return { success: false, message: response.error.message };
   }
@@ -40,7 +40,7 @@ async function checkTeamCode(teamCode) {
     .from("team")
     .select("team_id")
     .eq("team_code", teamCode);
-  console.log("checkTeamCode", response);
+
   if (response.error) {
     return { success: false, message: response.error.message };
   }
@@ -56,7 +56,6 @@ async function signUpUser(userId, userName, password, teamCode) {
 
   const teamId = await checkTeamCode(teamCode);
   let localTeamId = teamId;
-  console.log("teamId", teamId);
 
   if (!teamId) {
     const response2 = await createTeam(teamCode);

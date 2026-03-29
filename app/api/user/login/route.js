@@ -9,8 +9,6 @@ async function signInUser(userName, password) {
     .eq("user_id", userName)
     .eq("password", password.toString());
 
-  console.log("response1", response);
-
   if (response.data.length === 0) {
     return null;
   }
@@ -19,8 +17,6 @@ async function signInUser(userName, password) {
     .from("team")
     .select("team_code, team_name")
     .eq("team_id", response.data[0].team_id);
-
-  console.log("teamResponse", teamResponse);
 
   return {
     success: true,

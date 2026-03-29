@@ -10,7 +10,6 @@ async function getUserData(token) {
     .select("team_id")
     .eq("id", token);
 
-  console.log("team_id", team_id[0].team_id);
   const { data: profiles } = await supabase
     .from("profiles")
     .select("*")

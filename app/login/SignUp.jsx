@@ -41,14 +41,6 @@ function SignUpPage({ setIsSignup }) {
     ) {
       setIsSignupButtonDisabled(false);
     } else {
-      console.log(
-        "회원 가입 버튼 비활성화",
-        id.length > 0,
-        password.length > 0,
-        name.length > 0,
-        teamCode.length > 0,
-        isTeamCodeValid,
-      );
       setIsSignupButtonDisabled(true);
     }
   }, [id, password, name, teamCode, isTeamCodeValid]);
@@ -73,7 +65,6 @@ function SignUpPage({ setIsSignup }) {
     setIsTeamCodeGenerateButtonDisabled(false);
   };
   const onSignUp = async () => {
-    console.log(id, password, name, teamCode);
     const response = await fetch("/api/user/signup", {
       method: "POST",
       body: JSON.stringify({
@@ -102,7 +93,7 @@ function SignUpPage({ setIsSignup }) {
   };
   const onTeamCodeBlur = () => {
     if (!isTeamCodeValid) {
-      console.log("팀 코드 형식이 올바르지 않습니다.");
+      // console.log("팀 코드 형식이 올바르지 않습니다.");
     }
   };
 

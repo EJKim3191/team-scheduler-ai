@@ -81,7 +81,7 @@ const client = new OpenAI({
 });
 
 async function POST(req) {
-  const { userName, profileId, message } = await req.json();
+  const { userName, message } = await req.json();
   const response = await getGroqChatCompletion(userName, message);
 
   return NextResponse.json({

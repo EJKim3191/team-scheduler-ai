@@ -5,11 +5,13 @@ import { useState } from "react";
 import SignUpPage from "./SignUp";
 import { useRouter } from "next/navigation";
 import useTeam from "@/app/store/team";
+import useUser from "@/app/store/user";
 
 function LoginPage() {
   const router = useRouter();
   const setTeamCode = useTeam((state) => state.setTeamCode);
   const setTeamName = useTeam((state) => state.setTeamName);
+  const setUserId = useUser((state) => state.setUserId);
 
   const [id, setId] = useState("");
   const [password, setPassword] = useState("");
@@ -32,12 +34,13 @@ function LoginPage() {
       body: JSON.stringify({ userName: id, password: password }),
     });
     const data = await response.json();
-    console.log("data", data);
+
     if (data.success) {
       // localStorage.setItem("user_id", data.id);
       setCookie("sb-access-token", data.id);
       setTeamCode(data.teamCode);
       setTeamName(data.teamName);
+      setUserId(data.id);
       router.push("/");
     } else {
       alert(data.message);

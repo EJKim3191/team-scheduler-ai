@@ -21,7 +21,7 @@ export default async function Home() {
   const supabase = await createClient();
   const { data: profile } = await supabase
     .from("profiles")
-    .select("user_name")
+    .select("user_name, id")
     .eq("id", token.value)
     .single();
 
@@ -42,7 +42,10 @@ export default async function Home() {
           <div className={styles.mainRightContainer}>
             <GradientBar />
             <TeamMateComponent />
-            <ChatComponent />
+            <ChatComponent
+              name={profile?.user_name ?? "사용자"}
+              id={profile?.id ?? undefined}
+            />
           </div>
         </div>
       </main>
