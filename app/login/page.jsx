@@ -28,22 +28,32 @@ function LoginPage() {
   const onPasswordInput = (e) => {
     setPassword(e.target.value);
   };
+  const onKeyPress = (e) => {
+    if (e.key === "Enter") {
+      onLogin();
+    }
+  };
   const onLogin = async () => {
-    const response = await fetch("/api/user/login", {
-      method: "POST",
-      body: JSON.stringify({ userName: id, password: password }),
-    });
-    const data = await response.json();
+    try {
+      const response = await fetch("/api/user/login", {
+        method: "POST",
+        body: JSON.stringify({ userName: id, password: password }),
+      });
+      const data = await response.json();
 
-    if (data.success) {
-      // localStorage.setItem("user_id", data.id);
-      setCookie("sb-access-token", data.id);
-      setTeamCode(data.teamCode);
-      setTeamName(data.teamName);
-      setUserId(data.id);
-      router.push("/");
-    } else {
-      alert(data.message);
+      if (data.success) {
+        // localStorage.setItem("user_id", data.id);
+        setCookie("sb-access-token", data.id);
+        setTeamCode(data.teamCode);
+        setTeamName(data.teamName);
+        setUserId(data.id);
+        router.push("/");
+      } else {
+        alert(data.message);
+      }
+    } catch (error) {
+      // TODO:서버 에러 메시지 표시
+      alert("로그인 실패: 아이디 또는 비밀번호가 올바르지 않습니다.");
     }
   };
 
@@ -89,6 +99,7 @@ function LoginPage() {
               placeholder="비밀번호"
               autoComplete="current-password"
               onChange={onPasswordInput}
+              onKeyDown={onKeyPress}
             />
             <button className={styles.button} type="button" onClick={onLogin}>
               Login
