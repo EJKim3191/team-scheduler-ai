@@ -1,0 +1,281 @@
+@keyframes lp-section-in {
+  from {
+    opacity: 0;
+    transform: translateY(1.25rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.root {
+  --lp-fg: var(--foreground);
+  --lp-muted: color-mix(in oklab, var(--foreground) 55%, transparent);
+  --lp-border: color-mix(in oklab, var(--foreground) 12%, transparent);
+  --lp-surface: color-mix(in oklab, var(--foreground) 4%, transparent);
+  --lp-nav-h: 3.5rem;
+  height: 100dvh;
+  max-height: 100dvh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-snap-type: y mandatory;
+  scroll-padding-top: calc(env(safe-area-inset-top, 0px) + var(--lp-nav-h));
+  overscroll-behavior-y: contain;
+  color: var(--lp-fg);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(80% 55% at 50% -10%, color-mix(in oklab, #6366f1 22%, transparent), transparent 70%),
+    radial-gradient(60% 40% at 100% 20%, color-mix(in oklab, #22d3ee 14%, transparent), transparent 65%),
+    radial-gradient(50% 35% at 0% 80%, color-mix(in oklab, #a78bfa 12%, transparent), transparent 60%);
+}
+
+@media (prefers-color-scheme: dark) {
+  .bg {
+    background:
+      radial-gradient(80% 55% at 50% -10%, color-mix(in oklab, #818cf8 18%, transparent), transparent 70%),
+      radial-gradient(60% 40% at 100% 20%, color-mix(in oklab, #22d3ee 10%, transparent), transparent 65%),
+      radial-gradient(50% 35% at 0% 80%, color-mix(in oklab, #c4b5fd 10%, transparent), transparent 60%);
+  }
+}
+
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  padding-top: env(safe-area-inset-top, 0px);
+  border-bottom: 1px solid color-mix(in oklab, var(--foreground) 8%, transparent);
+  background: color-mix(in oklab, var(--background) 78%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.navInner {
+  max-width: 56rem;
+  margin: 0 auto;
+  min-height: var(--lp-nav-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.625rem clamp(1.25rem, 4vw, 2rem);
+}
+
+.brand {
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.navLink {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  padding: 0.5rem 0.875rem;
+  border-radius: 999px;
+  border: 1px solid var(--lp-border);
+  background: var(--lp-surface);
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.navLink:hover {
+  border-color: color-mix(in oklab, var(--foreground) 22%, transparent);
+}
+
+.snapSection {
+  position: relative;
+  z-index: 1;
+  min-height: 100dvh;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-sizing: border-box;
+  padding-top: calc(env(safe-area-inset-top, 0px) + var(--lp-nav-h) + 1rem);
+  padding-bottom: max(1.5rem, env(safe-area-inset-bottom, 0px));
+}
+
+.sectionInner {
+  width: 100%;
+  max-width: 56rem;
+  margin: 0 auto;
+  padding-left: clamp(1.25rem, 4vw, 2rem);
+  padding-right: clamp(1.25rem, 4vw, 2rem);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .snapReveal {
+      animation: lp-section-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+      animation-timeline: view(nearest);
+      animation-range: entry 0% entry 42%;
+    }
+  }
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--lp-muted);
+  margin-bottom: 1rem;
+}
+
+.eyebrow::before {
+  content: "";
+  width: 1.5rem;
+  height: 1px;
+  background: var(--lp-border);
+}
+
+.title {
+  font-size: clamp(2.25rem, 6vw, 3.25rem);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.04em;
+  margin-bottom: 1.25rem;
+}
+
+.titleGradient {
+  background: linear-gradient(
+    120deg,
+    var(--lp-fg) 0%,
+    color-mix(in oklab, var(--lp-fg) 72%, #6366f1) 45%,
+    color-mix(in oklab, var(--lp-fg) 65%, #22d3ee) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@media (prefers-color-scheme: dark) {
+  .titleGradient {
+    background: linear-gradient(120deg, #f4f4f5 0%, #a5b4fc 42%, #67e8f9 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}
+
+.lead {
+  font-size: clamp(1.0625rem, 2.2vw, 1.1875rem);
+  line-height: 1.65;
+  color: var(--lp-muted);
+  max-width: 36rem;
+  margin-bottom: 2rem;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  margin-bottom: 0;
+}
+
+.cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.625rem;
+  background: var(--lp-fg);
+  color: var(--background);
+  border: none;
+  cursor: pointer;
+  transition: transform 0.12s ease, opacity 0.12s ease;
+}
+
+.cta:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+
+.cta:focus-visible {
+  outline: 2px solid color-mix(in oklab, #6366f1 70%, var(--lp-fg));
+  outline-offset: 3px;
+}
+
+.ghost {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--lp-muted);
+  padding: 0.5rem 0;
+}
+
+.ghost:hover {
+  color: var(--lp-fg);
+}
+
+.sectionLabel {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--lp-muted);
+  margin-bottom: 1rem;
+}
+
+.grid {
+  display: grid;
+  gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.card {
+  padding: 1rem 1.125rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--lp-border);
+  background: color-mix(in oklab, var(--foreground) 3%, var(--background));
+}
+
+.card h3 {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.35rem;
+}
+
+.card p {
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  color: var(--lp-muted);
+}
+
+.foot {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+  font-size: 0.75rem;
+  color: var(--lp-muted);
+  text-align: center;
+}
+
+.snapSection:last-of-type .foot {
+  border-top: 1px solid var(--lp-border);
+  padding-top: 1.5rem;
+  max-width: 28rem;
+  margin-left: auto;
+  margin-right: auto;
+}

@@ -54,30 +54,81 @@ async function checkTeamCode(teamCode) {
 async function signUpUser(userId, userName, password, teamCode) {
   const supabase = await createClient();
 
-  const teamId = await checkTeamCode(teamCode);
-  let localTeamId = teamId;
+  // const teamId = await checkTeamCode(teamCode);
+  // let localTeamId = teamId;
 
-  if (!teamId) {
-    const response2 = await createTeam(teamCode);
+  // if (!teamId) {
+  //   const response2 = await createTeam(teamCode);
 
-    if (!response2.success) {
-      return { success: false, message: response2.message };
+  //   if (!response2.success) {
+  //     return { success: false, message: response2.message };
+  //   } else {
+  //     localTeamId = response2.teamId;
+  //   }
+  // }
+
+  // const response = await supabase.from("profiles").insert({
+  //   user_id: userId,
+  //   user_name: userName,
+  //   password: password,
+  //   team_id: localTeamId,
+  // });
+
+  // if (response.error) {
+  //   return { success: false, message: response.error.message };
+  // }
+  // return { success: true, message: "회원 가입이 완료되었습니다." };
+  try {
+    const { data, error } = await supabase.auth.signUp({
+      email: userId,
+      password: password,
+      options: {
+        data: {
+          first_name: userName,
+        },
+      },
+    });
+    console.log(data);
+    if (error) {
+      console.error(error);
     } else {
-      localTeamId = response2.teamId;
+      // Swal.fire({
+      //   position: 'center',
+      //   icon: 'success',
+      //   title: '회원가입에 성공하였습니다!',
+      //   showConfirmButton: false,
+      //   timer: 1500
+      // });
+      console.log("insert public table");
+      const teamId = await checkTeamCode(teamCode);
+      let localTeamId = teamId;
+
+      if (!teamId) {
+        const response2 = await createTeam(teamCode);
+
+        if (!response2.success) {
+          return { success: false, message: response2.message };
+        } else {
+          localTeamId = response2.teamId;
+        }
+      }
+
+      const response3 = await supabase.from("profiles").insert({
+        id: data.user.id,
+        user_id: userId,
+        user_name: userName,
+        team_id: localTeamId,
+      });
+      console.log(response3);
+      if (response3.error) {
+        return { success: false, message: response3.error.message };
+      } else {
+        return { success: true, message: "회원 가입이 완료되었습니다." };
+      }
     }
+  } catch (error) {
+    console.error(error);
   }
-
-  const response = await supabase.from("profiles").insert({
-    user_id: userId,
-    user_name: userName,
-    password: password,
-    team_id: localTeamId,
-  });
-
-  if (response.error) {
-    return { success: false, message: response.error.message };
-  }
-  return { success: true, message: "회원 가입이 완료되었습니다." };
 }
 
 async function POST(req) {
