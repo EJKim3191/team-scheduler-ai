@@ -1,18 +1,18 @@
 import { createClient } from "@/lib/supabase/server";
 const { NextResponse } = require("next/server");
 
-async function checkUser(id) {
-  const supabase = await createClient();
-  const response = await supabase
-    .from("profiles")
-    .select("id")
-    .eq("user_id", id);
+// async function checkUser(id) {
+//   const supabase = await createClient();
+//   const response = await supabase
+//     .from("profiles")
+//     .select("id")
+//     .eq("user_id", id);
 
-  if (response.data && response.data.length === 0) {
-    return { success: true, message: "사용 가능한 아이디입니다." };
-  }
-  return { success: false, message: "이미 존재하는 아이디입니다." };
-}
+//   if (response.data && response.data.length === 0) {
+//     return { success: true, message: "사용 가능한 아이디입니다." };
+//   }
+//   return { success: false, message: "이미 존재하는 아이디입니다." };
+// }
 
 async function createTeam(teamCode) {
   const supabase = await createClient();
@@ -85,46 +85,42 @@ async function signUpUser(userId, userName, password, teamCode) {
       options: {
         data: {
           first_name: userName,
+          emailRedirectTo: "https://example.com/welcome",
         },
       },
     });
-    console.log(data);
-    if (error) {
-      console.error(error);
-    } else {
-      // Swal.fire({
-      //   position: 'center',
-      //   icon: 'success',
-      //   title: '회원가입에 성공하였습니다!',
-      //   showConfirmButton: false,
-      //   timer: 1500
-      // });
-      console.log("insert public table");
-      const teamId = await checkTeamCode(teamCode);
-      let localTeamId = teamId;
+    console.log("signup data", data, "error!!! :", error);
 
-      if (!teamId) {
-        const response2 = await createTeam(teamCode);
+    // 중복 검사
+    if (data.user && data.user.identities && data.user.identities.length === 0)
+      return { success: false, message: "이미 존재하는 아이디입니다." };
 
-        if (!response2.success) {
-          return { success: false, message: response2.message };
-        } else {
-          localTeamId = response2.teamId;
-        }
-      }
+    console.log("insert public table");
+    const teamId = await checkTeamCode(teamCode);
+    let localTeamId = teamId;
 
-      const response3 = await supabase.from("profiles").insert({
-        id: data.user.id,
-        user_id: userId,
-        user_name: userName,
-        team_id: localTeamId,
-      });
-      console.log(response3);
-      if (response3.error) {
-        return { success: false, message: response3.error.message };
+    if (!teamId) {
+      //TODO: 팀 없이 아이디 생성
+      const response2 = await createTeam(teamCode);
+
+      if (!response2.success) {
+        return { success: false, message: response2.message };
       } else {
-        return { success: true, message: "회원 가입이 완료되었습니다." };
+        localTeamId = response2.teamId;
       }
+    }
+
+    const response3 = await supabase.from("profiles").insert({
+      id: data.user.id,
+      user_id: data.user.email || userId,
+      user_name: data.user.user_metadata.first_name || userName,
+      team_id: localTeamId,
+    });
+    console.log(response3);
+    if (response3.error) {
+      return { success: false, message: response3.error.message };
+    } else {
+      return { success: true, message: "회원 가입이 완료되었습니다." };
     }
   } catch (error) {
     console.error(error);
@@ -133,11 +129,11 @@ async function signUpUser(userId, userName, password, teamCode) {
 
 async function POST(req) {
   const { userId, userName, password, teamCode } = await req.json();
-  const response = await checkUser(userId);
+  // const response = await checkUser(userId);
 
-  if (!response.success) {
-    return NextResponse.json({ success: false, message: response.message });
-  }
+  // if (!response.success) {
+  //   return NextResponse.json({ success: false, message: response.message });
+  // }
 
   const response2 = await signUpUser(userId, userName, password, teamCode);
   if (!response2.success) {
