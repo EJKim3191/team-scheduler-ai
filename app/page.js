@@ -19,11 +19,17 @@ export default async function Home() {
   }
 
   const supabase = await createClient();
+  // const { user, error } = await supabase.auth.setAuth(token.value);
+  // console.log("user????", user, error);
+  const { data, error } = await supabase.auth.getUser();
+  console.log("data????", data, error);
   const { data: profile } = await supabase
     .from("profiles")
     .select("user_name, id")
     .eq("id", token.value)
     .single();
+
+  console.log("profile????", profile);
 
   return (
     <div className={styles.page}>

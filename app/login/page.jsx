@@ -43,7 +43,8 @@ function LoginPage() {
 
       if (data.success) {
         // localStorage.setItem("user_id", data.id);
-        setCookie("sb-access-token", data.id);
+        setCookie("sb-access-token", data.access_token);
+        setCookie("sb-refresh-token", data.refresh_token);
         setTeamCode(data.teamCode);
         setTeamName(data.teamName);
         setUserId(data.id);
