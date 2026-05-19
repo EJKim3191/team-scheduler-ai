@@ -10,6 +10,7 @@ import useUser from "@/app/store/user";
 function LoginPage() {
   const router = useRouter();
   const setTeamCode = useTeam((state) => state.setTeamCode);
+  const setTeamId = useTeam((state) => state.setTeamId);
   const setTeamName = useTeam((state) => state.setTeamName);
   const setUserId = useUser((state) => state.setUserId);
 
@@ -47,6 +48,7 @@ function LoginPage() {
         setCookie("sb-refresh-token", data.refresh_token);
         setTeamCode(data.teamCode);
         setTeamName(data.teamName);
+        setTeamId(data.teamId);
         setUserId(data.id);
         router.push("/");
       } else {

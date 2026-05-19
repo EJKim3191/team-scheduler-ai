@@ -8,17 +8,20 @@ async function signInUser(userName, password) {
     email: userName,
     password: password,
   });
-
   // error fall case
   if (!data.user) {
-    return null;
+    if (error && error.code === "email_not_confirmed") {
+      return { success: false, message: "이메일 인증이 필요합니다." };
+    } else {
+      return {
+        success: false,
+        message: "아이디 또는 비밀번호가 올바르지 않습니다.",
+      };
+    }
   }
 
   // TODO: 팀 정보 추가
-  const response = await supabase
-    .from("profiles")
-    .select("id, team_id")
-    .eq("id", data.user.id);
+  const response = await supabase.from("team_members").select("team_id");
 
   if (response.data.length === 0) {
     return {
@@ -50,8 +53,12 @@ async function POST(req) {
   const { userName, password } = await req.json();
   const response = await signInUser(userName, password);
 
+  if (!response.success) {
+    return NextResponse.json({ success: false, message: response.message });
+  }
+
   return NextResponse.json({
-    success: true,
+    success: response.success,
     access_token: response.access_token,
     refresh_token: response.refresh_token,
     // TODO: 팀 정보 추가

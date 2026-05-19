@@ -16,8 +16,19 @@ async function deleteUserDataById(ids) {
   return { success: true, data };
 }
 
-async function addUserData(scheduleData) {
+async function addUserData(access_token, refresh_token, scheduleData) {
   const supabase = await createClient();
+
+  const { error: sessionError } = await supabase.auth.setSession({
+    access_token: access_token,
+    refresh_token: refresh_token,
+  });
+
+  if (sessionError) {
+    console.error("세션 설정 실패:", sessionError.message);
+    return;
+  }
+
   const { data, error } = await supabase
     .from("user_schedules")
     // .insert(scheduleData);
@@ -25,12 +36,13 @@ async function addUserData(scheduleData) {
       onConflict: "profile_id, start_time", // 이 두 값이 겹치면
       ignoreDuplicates: true, // 새로운 PK 생성 없이 무시함
     });
+
   return { data, error };
 }
 
 async function POST(req) {
-  const scheduleData = await req.json();
-  const response = await addUserData(scheduleData);
+  const { access_token, refresh_token, data } = await req.json();
+  const response = await addUserData(access_token, refresh_token, data);
 
   return NextResponse.json({ response });
 }

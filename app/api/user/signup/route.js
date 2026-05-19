@@ -89,13 +89,11 @@ async function signUpUser(userId, userName, password, teamCode) {
         },
       },
     });
-    console.log("signup data", data, "error!!! :", error);
 
     // 중복 검사
     if (data.user && data.user.identities && data.user.identities.length === 0)
       return { success: false, message: "이미 존재하는 아이디입니다." };
 
-    console.log("insert public table");
     const teamId = await checkTeamCode(teamCode);
     let localTeamId = teamId;
 
@@ -116,7 +114,7 @@ async function signUpUser(userId, userName, password, teamCode) {
       user_name: data.user.user_metadata.first_name || userName,
       team_id: localTeamId,
     });
-    console.log(response3);
+
     if (response3.error) {
       return { success: false, message: response3.error.message };
     } else {

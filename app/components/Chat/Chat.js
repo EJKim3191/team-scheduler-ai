@@ -5,24 +5,27 @@ import React, { useState } from "react";
 import styles from "./Chat.module.css";
 import useCalander from "@/app/store/calander";
 import useUser from "@/app/store/user";
+import useTeam from "@/app/store/team";
 
 function getCookie(name) {
   var value = document.cookie.match("(^|;) ?" + name + "=([^;]*)(;|$)");
   return value ? unescape(value[2]) : null;
 }
 
-const ChatComponent = ({ name, id }) => {
+const ChatComponent = ({ profile, team }) => {
   const [message, setMessage] = useState("");
   const selectedIds = useCalander((state) => state.selectedIds);
   const setUserData = useUser((state) => state.setUsers);
   const clearSelectedIds = useCalander((state) => state.clearSelectedIds);
-  const userId = id ?? useUser((state) => state.userId);
 
   const fetchUserData = async () => {
     const response = await fetch("/api/calendar/user", {
       method: "POST",
       // body: JSON.stringify({ token: localStorage.getItem("user_id") }),
-      body: JSON.stringify({ token: getCookie("sb-access-token") }),
+      body: JSON.stringify({
+        access_token: getCookie("sb-access-token"),
+        refresh_token: getCookie("sb-refresh-token"),
+      }),
     });
     const data = await response.json();
     setUserData(data.response);
@@ -33,10 +36,9 @@ const ChatComponent = ({ name, id }) => {
       alert("메시지를 입력해주세요");
       return;
     }
-
     const response = await fetch("/api/chat", {
       method: "POST",
-      body: JSON.stringify({ userName: name, message: message }),
+      body: JSON.stringify({ userName: profile.user_name, message: message }),
     });
     let res = await response.json();
 
@@ -45,14 +47,18 @@ const ChatComponent = ({ name, id }) => {
 
       res.data.data.forEach((item) => {
         postData.push({
-          profile_id: userId,
+          team_id: team[0].team_id,
+          profile_id: profile[0].id,
           start_time: item.start_time + "00+09",
         });
       });
-
       await fetch("/api/calendar", {
         method: "POST",
-        body: JSON.stringify(postData),
+        body: JSON.stringify({
+          access_token: getCookie("sb-access-token"),
+          refresh_token: getCookie("sb-refresh-token"),
+          data: postData,
+        }),
       });
       fetchUserData();
     } else {
@@ -65,6 +71,8 @@ const ChatComponent = ({ name, id }) => {
       method: "DELETE",
       body: JSON.stringify({
         selectedIds,
+        access_token: getCookie("sb-access-token"),
+        refresh_token: getCookie("sb-refresh-token"),
       }),
     });
 

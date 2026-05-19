@@ -71,7 +71,10 @@ const CalendarComponent = () => {
       const response = await fetch("/api/calendar/user", {
         method: "POST",
         // body: JSON.stringify({ token: localStorage.getItem("user_id") }),
-        body: JSON.stringify({ token: getCookie("sb-access-token") }),
+        body: JSON.stringify({
+          access_token: getCookie("sb-access-token"),
+          refresh_token: getCookie("sb-refresh-token"),
+        }),
       });
       const data = await response.json();
       setUserData(data.response);
@@ -90,6 +93,8 @@ const CalendarComponent = () => {
 
   const getUserData = (cellKey) => {
     const matchedUsers = [];
+
+    if (!userData || userData.length === 0) return null;
 
     userData.forEach((user) => {
       user.schedule.forEach((schedule) => {
