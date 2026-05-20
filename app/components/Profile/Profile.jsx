@@ -5,11 +5,12 @@ import { useRouter } from "next/navigation";
 import styles from "./Profile.module.css";
 import useTeam from "@/app/store/team";
 
-function Profile({ name }) {
+function Profile({ profile }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isTeamCodeCopied, setIsTeamCodeCopied] = useState(false);
   const teamCode = useTeam((state) => state.teamCode);
   const teamName = useTeam((state) => state.teamName);
+  const name = profile[0]?.user_name ?? "사용자";
 
   const router = useRouter();
   const containerRef = useRef(null);

@@ -10,7 +10,6 @@ import Profile from "./components/Profile/Profile";
 import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import useUser from "./store/user";
 
 export default async function Home() {
   const cookieStore = await cookies();
@@ -37,16 +36,17 @@ export default async function Home() {
     .from("team")
     .select("team_id, team_code, team_name");
 
+  //TODO: 다중 팀일 경우 선택된 팀
   return (
     <div className={styles.page}>
       <main className={styles.main}>
         <div className={styles.calendarContainer}>
           <header className={styles.pageHeader}>
-            <h1 className={styles.title}>팀 일정 조율기</h1>
+            <h1 className={styles.title}>{team[0]?.team_name}팀의 일정</h1>
             <DatePickerComponent />
           </header>
           <div className={styles.profileHeader}>
-            <Profile name={profile?.user_name ?? "사용자"} />
+            <Profile profile={profile} />
           </div>
           <div className={styles.calendarCell}>
             <CalendarComponent />
