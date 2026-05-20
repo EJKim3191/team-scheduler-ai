@@ -1,0 +1,236 @@
+.page {
+  --mt-fg: var(--foreground);
+  --mt-muted: color-mix(in oklab, var(--foreground) 52%, transparent);
+  --mt-border: color-mix(in oklab, var(--foreground) 14%, transparent);
+  --mt-accent: #6366f1;
+  --mt-accent-soft: color-mix(in oklab, #6366f1 18%, transparent);
+  position: relative;
+  min-height: 100dvh;
+  overflow-y: auto;
+  color: var(--mt-fg);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(70% 50% at 50% 0%, var(--mt-accent-soft), transparent 65%),
+    radial-gradient(
+      55% 40% at 100% 100%,
+      color-mix(in oklab, #22d3ee 12%, transparent),
+      transparent 60%
+    ),
+    radial-gradient(
+      45% 35% at 0% 60%,
+      color-mix(in oklab, #a78bfa 10%, transparent),
+      transparent 55%
+    );
+}
+
+@media (prefers-color-scheme: dark) {
+  .bg {
+    background:
+      radial-gradient(
+        70% 50% at 50% 0%,
+        color-mix(in oklab, #818cf8 16%, transparent),
+        transparent 65%
+      ),
+      radial-gradient(
+        55% 40% at 100% 100%,
+        color-mix(in oklab, #22d3ee 8%, transparent),
+        transparent 60%
+      ),
+      radial-gradient(
+        45% 35% at 0% 60%,
+        color-mix(in oklab, #c4b5fd 8%, transparent),
+        transparent 55%
+      );
+  }
+}
+
+.createZone {
+  position: absolute;
+  z-index: 1;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(24rem, calc(100% - 3rem));
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  animation: mt-fade-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .createZone {
+    animation: none;
+  }
+}
+
+@keyframes mt-fade-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% + 0.75rem));
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+.textAction {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+  text-align: center;
+}
+
+.textActionLabel {
+  font-size: clamp(1.375rem, 5vw, 1.625rem);
+  font-weight: 650;
+  letter-spacing: -0.03em;
+  line-height: 1.35;
+  opacity: 0.62;
+  background: linear-gradient(
+    120deg,
+    var(--mt-fg) 0%,
+    color-mix(in oklab, var(--mt-fg) 70%, var(--mt-accent)) 55%,
+    color-mix(in oklab, var(--mt-fg) 65%, #22d3ee) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  transition:
+    opacity 0.28s ease,
+    font-size 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-color-scheme: dark) {
+  .textActionLabel {
+    background: linear-gradient(120deg, #f4f4f5 0%, #a5b4fc 50%, #67e8f9 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}
+
+.textAction:hover .textActionLabel,
+.textAction:focus-visible .textActionLabel {
+  opacity: 1;
+  font-size: clamp(1.5rem, 5.4vw, 1.75rem);
+}
+
+.textAction:focus-visible {
+  outline: none;
+}
+
+.textAction:focus-visible .textActionLabel {
+  outline: 2px solid color-mix(in oklab, var(--mt-accent) 45%, transparent);
+  outline-offset: 6px;
+  border-radius: 2px;
+}
+
+.textActionArrow {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: var(--mt-muted);
+  opacity: 0;
+  transform: translateX(-0.35rem);
+  transition:
+    opacity 0.28s ease,
+    transform 0.28s ease,
+    color 0.28s ease;
+}
+
+.textAction:hover .textActionArrow,
+.textAction:focus-visible .textActionArrow {
+  opacity: 0.85;
+  transform: translateX(0);
+  color: var(--mt-accent);
+}
+
+.joinBlock {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  bottom: 25%;
+  transform: translate(-50%, 50%);
+  width: min(22rem, calc(100% - 3rem));
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.875rem;
+  text-align: center;
+  padding: 0 clamp(0.5rem, 3vw, 1rem);
+  box-sizing: border-box;
+}
+
+.joinPrompt {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--mt-muted);
+  letter-spacing: -0.01em;
+}
+
+.inputWrap {
+  display: block;
+  width: 100%;
+}
+
+.input {
+  width: 100%;
+  padding: 0.75rem 0.125rem;
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-align: center;
+  color: var(--mt-fg);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--mt-border);
+  border-radius: 0;
+  outline: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.input::placeholder {
+  color: color-mix(in oklab, var(--mt-muted) 85%, transparent);
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.input:focus {
+  border-bottom-color: color-mix(
+    in oklab,
+    var(--mt-accent) 70%,
+    var(--mt-border)
+  );
+  box-shadow: 0 1px 0 0 color-mix(in oklab, var(--mt-accent) 35%, transparent);
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
