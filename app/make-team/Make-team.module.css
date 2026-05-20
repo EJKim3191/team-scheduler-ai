@@ -160,6 +160,195 @@
   color: var(--mt-accent);
 }
 
+.createForm {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 1.25rem;
+  text-align: left;
+  animation: mt-swap-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.createForm .input {
+  text-align: left;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .createForm {
+    animation: none;
+  }
+}
+
+@keyframes mt-swap-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.createFormHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.createFormTitle {
+  margin: 0;
+  flex: 1;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--mt-muted);
+  text-align: center;
+  padding-right: 2rem;
+}
+
+.backButton {
+  flex: 0 0 auto;
+  width: 2rem;
+  height: 2rem;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 0.5rem;
+  background: transparent;
+  color: var(--mt-muted);
+  font-size: 1.125rem;
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    background 0.15s ease;
+}
+
+.backButton:hover {
+  color: var(--mt-fg);
+  background: var(--mt-accent-soft);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.fieldLabel {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--mt-muted);
+  letter-spacing: -0.01em;
+}
+
+.teamCodeRow {
+  display: flex;
+  align-items: stretch;
+  gap: 0.625rem;
+}
+
+.inputTeamCode {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 0.75rem 0.125rem;
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-align: left;
+  color: var(--mt-fg);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--mt-border);
+  border-radius: 0;
+  outline: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.inputTeamCode::placeholder {
+  color: color-mix(in oklab, var(--mt-muted) 85%, transparent);
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.inputTeamCode:focus {
+  border-bottom-color: color-mix(
+    in oklab,
+    var(--mt-accent) 70%,
+    var(--mt-border)
+  );
+  box-shadow: 0 1px 0 0 color-mix(in oklab, var(--mt-accent) 35%, transparent);
+}
+
+.generateButton {
+  flex: 0 0 auto;
+  align-self: flex-end;
+  padding: 0.625rem 0.875rem;
+  margin-bottom: 0.125rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--mt-fg);
+  background: var(--mt-accent-soft);
+  border: 0px solid color-mix(in oklab, var(--mt-accent) 35%, var(--mt-border));
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition:
+    opacity 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.generateButton:hover:not(:disabled) {
+  border-color: color-mix(in oklab, var(--mt-accent) 55%, var(--mt-border));
+}
+
+.generateButton:disabled {
+  cursor: default;
+  opacity: 0.72;
+}
+
+.submitButton {
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 0.8125rem 1.25rem;
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-align: center;
+  color: var(--mt-fg);
+  background: var(--mt-accent-soft);
+  border: 0px solid var(--mt-border);
+  border-radius: 0.625rem;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    opacity 0.15s ease,
+    transform 0.12s ease;
+}
+
+.submitButton:hover:not(:disabled) {
+  border-color: color-mix(in oklab, var(--mt-accent) 70%, var(--mt-border));
+  box-shadow: 0 1px 0 0 color-mix(in oklab, var(--mt-accent) 35%, transparent);
+  transform: translateY(-1px);
+}
+
+.submitButton:focus-visible {
+  outline: none;
+  border-color: color-mix(in oklab, var(--mt-accent) 70%, var(--mt-border));
+  box-shadow: 0 1px 0 0 color-mix(in oklab, var(--mt-accent) 35%, transparent);
+}
+
+.submitButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.72;
+  transform: none;
+}
+
 .joinBlock {
   position: absolute;
   z-index: 1;
