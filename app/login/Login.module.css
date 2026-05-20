@@ -93,6 +93,24 @@
   box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15);
 }
 
+.inputError {
+  border-color: #dc2626;
+}
+
+.inputError:focus {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.15);
+}
+
+.errorMessage {
+  display: block;
+  min-height: 1.125rem;
+  margin: 2px 0 4px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: #dc2626;
+}
+
 .inputTeamCode {
   padding: 10px 12px;
   font-size: 14px;
@@ -107,6 +125,15 @@
 .inputTeamCode:focus {
   border-color: #4f46e5;
   box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15);
+}
+
+.inputTeamCode.inputError {
+  border-color: #dc2626;
+}
+
+.inputTeamCode.inputError:focus {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.15);
 }
 
 .button {

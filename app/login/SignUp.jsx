@@ -1,24 +1,37 @@
 "use client";
 
 /**회원 가입 페이지
- *  아이디, 비밀번호, 이름, 팀 코드를 입력하고 회원 가입을 진행합니다.
+ *  이메일, 비밀번호, 이름, 팀 코드를 입력하고 회원 가입을 진행합니다.
  *  팀 코드는 6자리 무작위 코드를 생성합니다.
  *  팀 코드는 팀원 초대 시 사용됩니다.
  *  팀이 없을 경우 팀을 만들게 됩니다.
  * */
 
-// TODO: ID validation 및 css처리
-
 import styles from "./Login.module.css";
-import { useState, useEffect } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { generateSmartCode, validateCodeFormat } from "@/utils/teamCode";
+import {
+  collectFieldErrors,
+  pickPriorityErrorMessage,
+} from "@/utils/signUpValidation";
 import LoadingOverlay from "@/app/components/LoadingOverlay/LoadingOverlay";
+
+const INITIAL_TOUCHED = {
+  id: false,
+  password: false,
+  confirmPassword: false,
+  name: false,
+  teamCode: false,
+};
 
 function SignUpPage({ setIsSignup }) {
   const [id, setId] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [name, setName] = useState("");
   const [teamCode, setTeamCode] = useState("");
+  const [touched, setTouched] = useState(INITIAL_TOUCHED);
+  const [fieldErrors, setFieldErrors] = useState({});
   const [isTeamCodeValid, setIsTeamCodeValid] = useState(false);
   const [
     isTeamCodeGenerateButtonDisabled,
@@ -27,37 +40,62 @@ function SignUpPage({ setIsSignup }) {
   const [isSignupButtonDisabled, setIsSignupButtonDisabled] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
 
+  const formValues = useMemo(
+    () => ({ id, password, confirmPassword, name, teamCode }),
+    [id, password, confirmPassword, name, teamCode],
+  );
+
+  const errorMessage = useMemo(
+    () => pickPriorityErrorMessage(fieldErrors),
+    [fieldErrors],
+  );
+
+  const syncFieldErrors = useCallback(
+    (nextTouched) => {
+      setFieldErrors(collectFieldErrors(nextTouched, formValues));
+    },
+    [formValues],
+  );
+
   useEffect(() => {
     setIsTeamCodeValid(validateCodeFormat(teamCode));
   }, [teamCode]);
 
   useEffect(() => {
+    syncFieldErrors(touched);
+  }, [touched, syncFieldErrors]);
+
+  useEffect(() => {
     if (
       id.length > 0 &&
       password.length > 0 &&
+      confirmPassword.length > 0 &&
       name.length > 0 &&
-      teamCode.length > 0 &&
-      isTeamCodeValid
+      password === confirmPassword
     ) {
       setIsSignupButtonDisabled(false);
     } else {
       setIsSignupButtonDisabled(true);
     }
-  }, [id, password, name, teamCode, isTeamCodeValid]);
+  }, [id, password, confirmPassword, name, teamCode, isTeamCodeValid]);
+
+  const onFieldBlur = (field) => {
+    setTouched((prev) => ({ ...prev, [field]: true }));
+  };
+
+  const inputClassName = (field) =>
+    fieldErrors[field] ? `${styles.input} ${styles.inputError}` : styles.input;
 
   const onIdInput = (e) => {
-    // TODO: id 규칙 생성
     setId(e.target.value);
   };
   const onPasswordInput = (e) => {
-    // TODO: password 규칙 생성
     setPassword(e.target.value);
   };
+  const onPasswordConfirmInput = (e) => {
+    setConfirmPassword(e.target.value);
+  };
   const onNameInput = (e) => {
-    if (e.target.value.length > 10) {
-      alert("이름은 10자 이하로 입력해주세요.");
-      return;
-    }
     setName(e.target.value);
   };
   const onTeamCodeInput = (e) => {
@@ -91,11 +129,6 @@ function SignUpPage({ setIsSignup }) {
     setTeamCode(newTeamCode);
     setIsTeamCodeGenerateButtonDisabled(true);
   };
-  const onTeamCodeBlur = () => {
-    if (!isTeamCodeValid) {
-      // console.log("팀 코드 형식이 올바르지 않습니다.");
-    }
-  };
 
   return (
     <form className={styles.form}>
@@ -112,46 +145,66 @@ function SignUpPage({ setIsSignup }) {
           ←
         </button>
       </div>
-      <p className={styles.subtitle}>아이디와 비밀번호, 이름을 입력해주세요.</p>
+      <p className={styles.subtitle}>이메일과 비밀번호, 이름을 입력해주세요.</p>
 
       <input
-        className={styles.input}
+        className={inputClassName("id")}
         type="text"
-        placeholder="아이디"
+        placeholder="이메일"
         autoComplete="username"
         value={id}
         onChange={onIdInput}
+        onBlur={() => onFieldBlur("id")}
+        aria-invalid={Boolean(fieldErrors.id)}
       />
       <input
-        className={styles.input}
+        className={inputClassName("password")}
         type="password"
         placeholder="비밀번호"
         autoComplete="new-password"
         value={password}
         onChange={onPasswordInput}
+        onBlur={() => onFieldBlur("password")}
+        aria-invalid={Boolean(fieldErrors.password)}
       />
       <input
-        className={styles.input}
+        className={inputClassName("confirmPassword")}
+        type="password"
+        placeholder="비밀번호 확인"
+        autoComplete="new-password"
+        value={confirmPassword}
+        onChange={onPasswordConfirmInput}
+        onBlur={() => onFieldBlur("confirmPassword")}
+        aria-invalid={Boolean(fieldErrors.confirmPassword)}
+      />
+      <input
+        className={inputClassName("name")}
         type="text"
         placeholder="이름"
         autoComplete="name"
         value={name}
         onChange={onNameInput}
+        onBlur={() => onFieldBlur("name")}
+        aria-invalid={Boolean(fieldErrors.name)}
       />
-      <br />
-      <p className={styles.subtitle}>
+      {/* <p className={styles.subtitle}>
         팀 코드는 팀원 초대 시 사용됩니다.
         <br />
         팀이 없으시면 팀 코드 생성 버튼을 눌러주세요.
       </p>
       <div className={styles.teamCodeRow}>
         <input
-          className={styles.inputTeamCode}
+          className={
+            fieldErrors.teamCode
+              ? `${styles.inputTeamCode} ${styles.inputError}`
+              : styles.inputTeamCode
+          }
           type="text"
           placeholder="팀 코드"
           value={teamCode}
-          onBlur={onTeamCodeBlur}
+          onBlur={() => onFieldBlur("teamCode")}
           onChange={onTeamCodeInput}
+          aria-invalid={Boolean(fieldErrors.teamCode)}
         />
         <button
           className={styles.buttonTeamCode}
@@ -161,8 +214,11 @@ function SignUpPage({ setIsSignup }) {
         >
           {isTeamCodeGenerateButtonDisabled ? "완료!" : "팀 코드 생성"}
         </button>
-      </div>
+      </div> */}
 
+      <span className={styles.errorMessage} role="alert">
+        {errorMessage}
+      </span>
       <br />
       <button
         className={styles.button}
