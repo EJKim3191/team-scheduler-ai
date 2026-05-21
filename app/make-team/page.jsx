@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 import { generateSmartCode, validateCodeFormat } from "@/utils/teamCode";
 
 import styles from "./Make-team.module.css";
 
 export default function MakeTeamPage() {
+  const router = useRouter();
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [teamName, setTeamName] = useState("");
   const [createTeamCode, setCreateTeamCode] = useState("");
@@ -57,9 +59,25 @@ export default function MakeTeamPage() {
     // TODO: 팀 생성 API 연결
   };
 
+  const handleLogout = () => {
+    document.cookie = "sb-access-token=; path=/; max-age=0;";
+    router.push("/login");
+    router.refresh();
+  };
+
   return (
     <main className={styles.page}>
       <div className={styles.bg} aria-hidden />
+
+      <div className={styles.logoutWrap}>
+        <button
+          type="button"
+          className={styles.logoutButton}
+          onClick={handleLogout}
+        >
+          로그아웃
+        </button>
+      </div>
 
       <div className={styles.createZone}>
         {showCreateForm ? (

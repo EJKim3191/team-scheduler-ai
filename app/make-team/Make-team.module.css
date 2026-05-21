@@ -423,3 +423,44 @@
   white-space: nowrap;
   border: 0;
 }
+
+.logoutWrap {
+  position: fixed;
+  z-index: 2;
+  top: 1.25rem;
+  right: 1.25rem;
+}
+
+.logoutButton {
+  border: 0;
+  border-radius: 10px;
+  padding: 0.5rem 0.875rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  opacity: 0.62;
+  background: linear-gradient(
+    120deg,
+    var(--mt-fg) 0%,
+    color-mix(in oklab, var(--mt-fg) 70%, var(--mt-accent)) 55%,
+    color-mix(in oklab, var(--mt-fg) 65%, #22d3ee) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  transition: opacity 0.28s ease;
+}
+
+.logoutButton:hover {
+  opacity: 1;
+}
+
+@media (prefers-color-scheme: dark) {
+  .logoutButton {
+    background: linear-gradient(120deg, #f4f4f5 0%, #a5b4fc 50%, #67e8f9 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}

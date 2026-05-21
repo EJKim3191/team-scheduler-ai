@@ -36,6 +36,10 @@ export default async function Home() {
     .from("team")
     .select("team_id, team_code, team_name");
 
+  if (team.length === 0) {
+    redirect("/make-team");
+  }
+
   //TODO: 다중 팀일 경우 선택된 팀
   return (
     <div className={styles.page}>
