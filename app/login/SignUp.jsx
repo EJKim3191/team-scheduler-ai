@@ -109,7 +109,6 @@ function SignUpPage({ setIsSignup }) {
         userId: id,
         userName: name,
         password: password,
-        teamCode: teamCode,
       }),
     });
     const data = await response.json();

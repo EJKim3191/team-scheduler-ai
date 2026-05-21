@@ -11,6 +11,8 @@ const TeamMateComponent = () => {
   const [nonParticipatingUsers, setNonParticipatingUsers] = useState([]);
 
   useEffect(() => {
+    if (!userData) return;
+
     setParticipatingUsers(userData.filter((user) => user.schedule.length > 0));
     setNonParticipatingUsers(
       userData.filter((user) => user.schedule.length == 0),
