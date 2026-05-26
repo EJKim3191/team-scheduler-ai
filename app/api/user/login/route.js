@@ -39,12 +39,12 @@ async function signInUser(userName, password) {
     }
   }
 
+  const { data: isExists, error: isExistsError } = await supabase.rpc(
+    "check_profile_exists",
+    { id: data.user.id },
+  );
   // DB public table에 정보 추가
-  const profileResponse = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("id", data.user.id);
-  if (profileResponse.data.length === 0) {
+  if (!isExists) {
     await addUserToDB(data.user);
   }
 

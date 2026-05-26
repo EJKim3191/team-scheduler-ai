@@ -7,6 +7,7 @@ import GradientBar from "./components/GradientBar/GradientBar";
 import DatePickerComponent from "./components/DatePicker/DatePicker";
 import Footer from "./components/Footer/Footer";
 import Profile from "./components/Profile/Profile";
+import TeamSelector from "./components/TeamSelector/TeamSelector";
 import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -51,6 +52,10 @@ export default async function Home({ searchParams }) {
         <div className={styles.calendarContainer}>
           <header className={styles.pageHeader}>
             <h1 className={styles.title}>{selectedTeam?.team_name}팀의 일정</h1>
+            <TeamSelector
+              teams={team}
+              selectedTeamId={selectedTeam?.team_id}
+            />
             <DatePickerComponent />
           </header>
           <div className={styles.profileHeader}>

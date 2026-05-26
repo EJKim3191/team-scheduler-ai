@@ -1,0 +1,143 @@
+.container {
+  position: relative;
+  width: min(220px, 100%);
+  --selector-surface: #ffffff;
+  --selector-border: #e5e7eb;
+}
+
+.trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border: 1px solid var(--selector-border);
+  border-radius: 12px;
+  background-color: var(--selector-surface);
+  cursor: pointer;
+  transition: border-radius 160ms ease;
+}
+
+.triggerOpen {
+  border-bottom: 0;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.triggerLabel {
+  font-size: 12px;
+  color: #6b7280;
+  flex-shrink: 0;
+}
+
+.triggerTeam {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chevron {
+  flex-shrink: 0;
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+.menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  border: 1px solid var(--selector-border);
+  border-top: 0;
+  border-radius: 0 0 12px 12px;
+  background-color: var(--selector-surface);
+  z-index: 30;
+  transform-origin: top;
+  opacity: 0;
+  transform: translateY(-4px) scaleY(0.95);
+  pointer-events: none;
+  transition:
+    opacity 160ms ease,
+    transform 180ms ease;
+}
+
+.menuOpen {
+  opacity: 1;
+  transform: translateY(0) scaleY(1);
+  pointer-events: auto;
+}
+
+.option {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.option:hover {
+  background-color: #f3f4f6;
+}
+
+.optionSelected {
+  background-color: #eff6ff;
+}
+
+.optionName {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.optionSelected .optionName {
+  color: #1d4ed8;
+}
+
+.optionCode {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+@media (prefers-color-scheme: dark) {
+  .container {
+    --selector-surface: #111827;
+    --selector-border: #374151;
+  }
+
+  .triggerTeam,
+  .optionName {
+    color: #f9fafb;
+  }
+
+  .triggerLabel,
+  .optionCode {
+    color: #9ca3af;
+  }
+
+  .option:hover {
+    background-color: #1f2937;
+  }
+
+  .optionSelected {
+    background-color: #1e3a5f;
+  }
+
+  .optionSelected .optionName {
+    color: #93c5fd;
+  }
+}
