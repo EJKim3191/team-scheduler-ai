@@ -71,8 +71,13 @@ export default function MakeTeamPage() {
       }),
     });
     const data = await response.json();
+
     if (data.success) {
-      router.push("/");
+      if (data.teamId) {
+        router.push(`/?teamId=${data.teamId}`);
+      } else {
+        router.push("/");
+      }
     } else {
       alert(data.message);
     }

@@ -35,7 +35,11 @@ async function createTeam(teamCode, teamName, token, refresh_token) {
     return { success: false, message: response2.error.message };
   }
 
-  return { success: true, message: "팀 멤버가 추가되었습니다." };
+  return {
+    success: true,
+    message: "팀 멤버가 추가되었습니다.",
+    teamId: response.data[0].team_id,
+  };
 }
 
 async function checkTeamCount() {
@@ -116,7 +120,11 @@ async function POST(req) {
       });
     }
   }
-  return NextResponse.json({ success: false, message: teamId.message });
+  return NextResponse.json({
+    success: false,
+    message: teamId.message,
+    teamId: teamId.teamId,
+  });
 }
 
 export { POST };

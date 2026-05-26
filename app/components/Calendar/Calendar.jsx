@@ -55,14 +55,12 @@ function getCookie(name) {
   return value ? unescape(value[2]) : null;
 }
 
-const CalendarComponent = () => {
-  // const [selectedDate, setSelectedDate] = useState(new Date());
+const CalendarComponent = ({ team }) => {
   const selectedDate = useCalander((state) => state.selectedDate);
   const [expandedCellKey, setExpandedCellKey] = useState(null);
   const [hoveredCellKey, setHoveredCellKey] = useState(null);
-  // const [userData, setUserData] = useState([]);
-  const userData = useUser((state) => state.users);
-  const setUserData = useUser((state) => state.setUsers);
+  const [userData, setUserData] = useState([]);
+
   const selectedIds = useCalander((state) => state.selectedIds);
   const updateSelectedIds = useCalander((state) => state.updateSelectedIds);
 
@@ -70,10 +68,10 @@ const CalendarComponent = () => {
     const fetchUserData = async () => {
       const response = await fetch("/api/calendar/user", {
         method: "POST",
-        // body: JSON.stringify({ token: localStorage.getItem("user_id") }),
         body: JSON.stringify({
           access_token: getCookie("sb-access-token"),
           refresh_token: getCookie("sb-refresh-token"),
+          team_id: team.team_id,
         }),
       });
       const data = await response.json();
@@ -96,20 +94,18 @@ const CalendarComponent = () => {
 
     if (!userData || userData.length === 0) return null;
 
-    userData.forEach((user) => {
-      user.schedule.forEach((schedule) => {
-        if (isTimeInRange(cellKey, schedule.start_time)) {
-          const userName = user.user_name || "";
-          const initial = (userName && userName[0]) || "?";
-          const backgroundColor = getColorForUser(userName);
-          matchedUsers.push({
-            id: schedule.id,
-            key: `${userName}-${schedule.start_time}-${cellKey}`,
-            initial: initial.toUpperCase(),
-            backgroundColor,
-          });
-        }
-      });
+    userData.forEach((schedule) => {
+      if (isTimeInRange(cellKey, schedule.start_time)) {
+        const userName = schedule.profiles.user_name || "";
+        const initial = (userName && userName[0]) || "?";
+        const backgroundColor = getColorForUser(userName);
+        matchedUsers.push({
+          id: schedule.profile_id,
+          key: `${userName}-${schedule.start_time}-${cellKey}`,
+          initial: initial.toUpperCase(),
+          backgroundColor,
+        });
+      }
     });
     const userLength = matchedUsers.length;
     const isExpanded =
