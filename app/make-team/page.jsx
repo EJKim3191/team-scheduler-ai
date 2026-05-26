@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-
+import { useCookies } from "next-client-cookies";
 import { generateSmartCode, validateCodeFormat } from "@/utils/teamCode";
 
 import styles from "./Make-team.module.css";
@@ -18,6 +18,10 @@ export default function MakeTeamPage() {
     setIsTeamCodeGenerateButtonDisabled,
   ] = useState(false);
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
+
+  const cookies = useCookies();
+  const token = cookies.get("sb-access-token");
+  const refresh_token = cookies.get("sb-refresh-token");
 
   useEffect(() => {
     const isValid =
@@ -54,9 +58,24 @@ export default function MakeTeamPage() {
     setInviteTeamCode(e.target.value);
   };
 
-  const onSubmitCreateTeam = () => {
+  const onSubmitCreateTeam = async () => {
     if (isSubmitDisabled) return;
     // TODO: 팀 생성 API 연결
+    const response = await fetch("/api/team", {
+      method: "POST",
+      body: JSON.stringify({
+        teamName: teamName,
+        teamCode: createTeamCode,
+        token: token,
+        refresh_token: refresh_token,
+      }),
+    });
+    const data = await response.json();
+    if (data.success) {
+      router.push("/");
+    } else {
+      alert(data.message);
+    }
   };
 
   const handleLogout = () => {

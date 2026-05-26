@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import ogUrl from "@/public/OG_image.png";
+import { CookiesProvider } from "next-client-cookies/server";
 
 import "./globals.css";
 
@@ -40,7 +41,7 @@ export default async function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        {children}
+        <CookiesProvider>{children}</CookiesProvider>
       </body>
     </html>
   );
