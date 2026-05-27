@@ -10,7 +10,12 @@ const SAMPLE_TEAMS = [
   { team_id: 3, team_name: "감마", team_code: "GAMMA03" },
 ];
 
-function TeamSelector({ teams = SAMPLE_TEAMS, selectedTeamId }) {
+function TeamSelector({
+  teams = SAMPLE_TEAMS,
+  selectedTeamId,
+  onTeamSelect,
+  label = "팀 선택",
+}) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef(null);
   const router = useRouter();
@@ -37,6 +42,10 @@ function TeamSelector({ teams = SAMPLE_TEAMS, selectedTeamId }) {
 
   const handleSelectTeam = (teamId) => {
     setIsOpen(false);
+    if (onTeamSelect) {
+      onTeamSelect(teamId);
+      return;
+    }
     router.push(`/?teamId=${teamId}`);
     router.refresh();
   };
@@ -50,7 +59,7 @@ function TeamSelector({ teams = SAMPLE_TEAMS, selectedTeamId }) {
         aria-expanded={isOpen}
         aria-haspopup="listbox"
       >
-        <span className={styles.triggerLabel}>팀 선택</span>
+        <span className={styles.triggerLabel}>{label}</span>
         <span className={styles.triggerTeam}>
           {selectedTeam?.team_name ?? "팀 없음"}
         </span>

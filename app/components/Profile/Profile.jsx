@@ -40,6 +40,10 @@ function Profile({ profile, teams, selectedTeamId }) {
     return () => clearTimeout(timeoutId);
   }, [isTeamCodeCopied]);
 
+  const handleNavigateManage = () => {
+    router.push("/manage");
+  };
+
   const handleLogout = () => {
     document.cookie = "sb-access-token=; path=/; max-age=0;";
     router.push("/login");
@@ -87,6 +91,9 @@ function Profile({ profile, teams, selectedTeamId }) {
         aria-label="프로필 메뉴"
         aria-hidden={!isOpen}
       >
+        <div className={styles.manageLink} onClick={handleNavigateManage}>
+          <span className={styles.menuName}>관리</span>
+        </div>
         <div className={styles.copyLayout} onClick={handleCopyTeamCode}>
           <p className={styles.menuName}>팀 코드 복사</p>
           <svg

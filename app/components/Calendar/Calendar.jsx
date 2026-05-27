@@ -11,6 +11,7 @@ import "react-calendar/dist/Calendar.css";
 import styles from "./Calendar.module.css";
 import useCalander from "@/app/store/calander";
 import useUser from "@/app/store/user";
+import { getCookie } from "@/utils/cookie";
 
 const HOURS = Array.from({ length: 24 }, (_, i) => i); // 0 ~ 23시
 
@@ -49,11 +50,6 @@ const getStartOfWeek = (date) => {
   d.setHours(0, 0, 0, 0);
   return d;
 };
-
-function getCookie(name) {
-  var value = document.cookie.match("(^|;) ?" + name + "=([^;]*)(;|$)");
-  return value ? unescape(value[2]) : null;
-}
 
 const CalendarComponent = ({ team }) => {
   const selectedDate = useCalander((state) => state.selectedDate);

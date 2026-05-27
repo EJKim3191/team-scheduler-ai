@@ -1,0 +1,97 @@
+.card {
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 16px;
+  background: #ffffff;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
+}
+
+.card + .card {
+  margin-top: 14px;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.cardTitle {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.cardMeta {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 650;
+}
+
+.statusRow {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.statusItem {
+  flex: 1 1 180px;
+  min-width: 160px;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+}
+
+.statusLabel {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 700;
+}
+
+.statusValue {
+  margin-top: 8px;
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+}
+
+.activityList {
+  margin: 0;
+  padding-left: 18px;
+  color: #6b7280;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.mono {
+  font-family: var(--font-geist-mono);
+  font-size: 12px;
+  color: #4b5563;
+}
+
+@media (prefers-color-scheme: dark) {
+  .card {
+    border-color: #2b2b2b;
+    background: #0f0f0f;
+  }
+
+  .statusItem {
+    border-color: #2b2b2b;
+    background: #020617;
+  }
+
+  .cardMeta,
+  .statusLabel,
+  .activityList {
+    color: #9ca3af;
+  }
+
+  .mono {
+    color: #e5e7eb;
+  }
+}
+
