@@ -52,14 +52,15 @@ export default async function Home({ searchParams }) {
         <div className={styles.calendarContainer}>
           <header className={styles.pageHeader}>
             <h1 className={styles.title}>{selectedTeam?.team_name}팀의 일정</h1>
-            <TeamSelector
-              teams={team}
-              selectedTeamId={selectedTeam?.team_id}
-            />
+            <TeamSelector teams={team} selectedTeamId={selectedTeam?.team_id} />
             <DatePickerComponent />
           </header>
           <div className={styles.profileHeader}>
-            <Profile profile={profile} />
+            <Profile
+              profile={profile}
+              teams={team}
+              selectedTeamId={selectedTeam?.team_id}
+            />
           </div>
           <div className={styles.calendarCell}>
             <CalendarComponent team={selectedTeam} />

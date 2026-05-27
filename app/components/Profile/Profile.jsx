@@ -3,13 +3,15 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./Profile.module.css";
-import useTeam from "@/app/store/team";
 
-function Profile({ profile }) {
+function Profile({ profile, teams, selectedTeamId }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isTeamCodeCopied, setIsTeamCodeCopied] = useState(false);
-  const teamCode = useTeam((state) => state.teamCode);
-  const teamName = useTeam((state) => state.teamName);
+
+  const resolvedId =
+    selectedTeamId ?? teams[0]?.team_id ?? SAMPLE_TEAMS[0].team_id;
+  const selectedTeam =
+    teams.find((team) => team.team_id === Number(resolvedId)) ?? teams[0];
   const name = profile[0]?.user_name ?? "사용자";
 
   const router = useRouter();
@@ -46,14 +48,13 @@ function Profile({ profile }) {
 
   const handleCopyTeamCode = async (event) => {
     event.stopPropagation();
-    // if (!teamCode) return;
 
     try {
-      await navigator.clipboard.writeText(teamCode);
+      await navigator.clipboard.writeText(selectedTeam?.team_code);
       setIsTeamCodeCopied(true);
     } catch {
       const textarea = document.createElement("textarea");
-      textarea.value = teamCode;
+      textarea.value = selectedTeam?.team_code;
       textarea.setAttribute("readonly", "");
       textarea.style.position = "fixed";
       textarea.style.opacity = "0";
@@ -76,7 +77,7 @@ function Profile({ profile }) {
       >
         <span className={styles.nameRow}>
           <strong className={styles.name}>{name}</strong>
-          <span className={styles.teamCode}>{teamName}</span>
+          <span className={styles.teamCode}>{selectedTeam?.team_code}</span>
         </span>
       </button>
 
