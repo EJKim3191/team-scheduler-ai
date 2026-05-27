@@ -78,7 +78,7 @@ const CalendarComponent = ({ team }) => {
       setUserData(data.response);
     };
     fetchUserData();
-  }, []);
+  }, [team]);
 
   const weekDays = useMemo(() => {
     const start = getStartOfWeek(selectedDate);
