@@ -5,6 +5,46 @@ import { getCookie } from "@/utils/cookie";
 import { useState, useEffect } from "react";
 import TeamSelector from "../TeamSelector/TeamSelector";
 import LoadingWheel from "@/app/components/LoadingWheel/LoadingWheel";
+import { IsoToTimeStamp } from "@/utils/timeStamp";
+
+function ApproveIcon() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M20 7L9 18L4 13"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function CancelIcon() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M18 6L6 18M6 6l12 12"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
 
 export default function UsersSection() {
   const [myProfile, setMyProfile] = useState({});
@@ -17,6 +57,8 @@ export default function UsersSection() {
   const [isLoadingMembers, setIsLoadingMembers] = useState(false);
   const [pendingDelete, setPendingDelete] = useState(null);
   const [isMemberChanged, setIsMemberChanged] = useState(false);
+  const [invitationsSent, setInvitationsSent] = useState([]);
+  const [invitationsReceived, setInvitationsReceived] = useState([]);
 
   useEffect(() => {
     const fetchTeams = async () => {
@@ -130,6 +172,26 @@ export default function UsersSection() {
     }
   };
 
+  useEffect(() => {
+    const fetchInvitations = async () => {
+      const response = await fetch("/api/team/invitation", {
+        method: "POST",
+        body: JSON.stringify({
+          access_token: getCookie("sb-access-token"),
+          refresh_token: getCookie("sb-refresh-token"),
+          teamId: selectedTeamId,
+        }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        console.log("data", data);
+        setInvitationsSent(data.invitationsSent);
+        setInvitationsReceived(data.invitationsReceived);
+      }
+    };
+    fetchInvitations();
+  }, [selectedTeamId]);
+
   const handleConfirmDelete = async () => {
     if (!pendingDelete) return;
     await handleDelete(pendingDelete, selectedTeamId);
@@ -218,10 +280,75 @@ export default function UsersSection() {
       </div>
 
       <div className={styles.card}>
-        <h2 className={styles.cardTitle}>감사 로그</h2>
-        <p className={styles.cardDescription}>
-          사용자 권한 변경/팀 접근 내역을 기록하고 확인할 수 있게 확장해 주세요.
-        </p>
+        <div className={styles.cardHeader}>
+          <h2 className={styles.cardTitle}>들어온 요청</h2>
+        </div>
+        <div className={styles.invitationTable}>
+          <div className={styles.invitationTableHeader}>
+            <div className={styles.invitationHeaderCell}>이름</div>
+            <div className={styles.invitationHeaderCell}>이메일</div>
+            <div className={styles.invitationHeaderCell}>요청 일시</div>
+            <div
+              className={`${styles.invitationHeaderCell} ${styles.invitationActionHeader}`}
+              aria-hidden="true"
+            />
+          </div>
+          {invitationsReceived.map((row) =>
+            row.profile ? (
+              <div key={row.id} className={styles.invitationTableRow}>
+                <div className={styles.invitationTableCell}>
+                  {row.profile.user_name}
+                </div>
+                <div className={styles.invitationTableCell}>
+                  {row.profile.user_id}
+                </div>
+                <div className={styles.invitationTableCell}>
+                  {IsoToTimeStamp(row.created_at, "ko-KR")}
+                </div>
+                <div
+                  className={`${styles.invitationTableCell} ${styles.invitationActionCell}`}
+                >
+                  <button
+                    type="button"
+                    className={`${styles.invitationIconButton} ${styles.invitationIconButtonApprove}`}
+                    aria-label="승인"
+                  >
+                    <ApproveIcon />
+                  </button>
+                  <button
+                    type="button"
+                    className={`${styles.invitationIconButton} ${styles.invitationIconButtonCancel}`}
+                    aria-label="취소"
+                  >
+                    <CancelIcon />
+                  </button>
+                </div>
+              </div>
+            ) : null,
+          )}
+        </div>
+      </div>
+
+      <div className={styles.card}>
+        <div className={styles.cardHeader}>
+          <h2 className={styles.cardTitle}>보낸 요청</h2>
+        </div>
+        <div className={styles.table}>
+          <div className={styles.tableRowHeader}>
+            <div>이메일</div>
+            <div>요청 일시</div>
+            <div>상태</div>
+          </div>
+          {invitationsSent.map((row) => (
+            <div key={row.id} className={styles.tableRow}>
+              <div className={styles.tableCell}>{row.email}</div>
+              <div className={styles.tableCell}>
+                {IsoToTimeStamp(row.created_at)}
+              </div>
+              <div className={styles.tableCell}>{row.status}</div>
+            </div>
+          ))}
+        </div>
       </div>
 
       {pendingDelete && (

@@ -168,6 +168,110 @@
   color: #4f46e5;
 }
 
+.invitationTable {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  --invitation-grid-columns: minmax(0, 1fr) minmax(0, 1.4fr) minmax(0, 1.1fr) 70px;
+}
+
+.invitationTableHeader,
+.invitationTableRow {
+  display: grid;
+  grid-template-columns: var(--invitation-grid-columns);
+  gap: 10px;
+  align-items: center;
+  padding: 10px;
+}
+
+.invitationTableHeader {
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: rgba(79, 70, 229, 0.06);
+  border: 1px solid rgba(79, 70, 229, 0.2);
+  font-size: 12px;
+  color: #4b5563;
+  font-weight: 800;
+}
+
+.invitationHeaderCell {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.invitationTableRow {
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.invitationTableCell {
+  min-width: 0;
+  color: #6b7280;
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.invitationActionCell {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  width: 70px;
+  overflow: visible;
+  white-space: normal;
+}
+
+.invitationActionHeader {
+  width: 70px;
+  flex-shrink: 0;
+}
+
+.invitationIconButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  flex-shrink: 0;
+  padding: 0;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease;
+}
+
+.invitationIconButtonApprove {
+  color: #16a34a;
+  border-color: rgba(22, 163, 74, 0.35);
+  background: rgba(22, 163, 74, 0.1);
+}
+
+.invitationIconButtonCancel {
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.35);
+  background: rgba(239, 68, 68, 0.08);
+}
+
+.invitationIconButtonApprove:hover {
+  background: rgba(22, 163, 74, 0.18);
+}
+
+.invitationIconButtonCancel:hover {
+  background: rgba(239, 68, 68, 0.14);
+}
+
+.invitationIconButton:focus-visible {
+  outline: 2px solid rgba(79, 70, 229, 0.35);
+  outline-offset: 2px;
+}
+
 .modalOverlay {
   position: fixed;
   inset: 0;
@@ -301,6 +405,41 @@
     border-color: rgba(129, 140, 248, 0.7);
     background: rgba(129, 140, 248, 0.3);
     color: #c7d2fe;
+  }
+
+  .invitationTableHeader {
+    border-color: rgba(129, 140, 248, 0.5);
+    background: rgba(129, 140, 248, 0.18);
+    color: #e5e7eb;
+  }
+
+  .invitationTableRow {
+    border-color: #27272a;
+    background: #020617;
+  }
+
+  .invitationTableCell {
+    color: #9ca3af;
+  }
+
+  .invitationIconButtonApprove {
+    color: #4ade80;
+    border-color: rgba(74, 222, 128, 0.35);
+    background: rgba(74, 222, 128, 0.12);
+  }
+
+  .invitationIconButtonCancel {
+    color: #f87171;
+    border-color: rgba(248, 113, 113, 0.35);
+    background: rgba(248, 113, 113, 0.1);
+  }
+
+  .invitationIconButtonApprove:hover {
+    background: rgba(74, 222, 128, 0.2);
+  }
+
+  .invitationIconButtonCancel:hover {
+    background: rgba(248, 113, 113, 0.16);
   }
 
   .deleteButton {
