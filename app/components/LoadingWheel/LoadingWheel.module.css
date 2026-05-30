@@ -1,0 +1,63 @@
+.wrap {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.centered {
+  display: flex;
+  width: 100%;
+  min-height: 160px;
+  justify-content: center;
+}
+
+.wheel {
+  border-radius: 999px;
+  border-style: solid;
+  border-color: rgba(17, 24, 39, 0.18);
+  border-top-color: rgba(79, 70, 229, 0.95);
+  animation: spin 900ms linear infinite;
+}
+
+.sm {
+  width: 20px;
+  height: 20px;
+  border-width: 2px;
+}
+
+.md {
+  width: 30px;
+  height: 30px;
+  border-width: 3px;
+}
+
+.lg {
+  width: 40px;
+  height: 40px;
+  border-width: 4px;
+}
+
+.label {
+  margin: 0;
+  font-size: 13px;
+  color: rgba(17, 24, 39, 0.78);
+  letter-spacing: -0.01em;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .wheel {
+    border-color: rgba(243, 244, 246, 0.18);
+    border-top-color: rgba(129, 140, 248, 0.95);
+  }
+
+  .label {
+    color: rgba(243, 244, 246, 0.78);
+  }
+}

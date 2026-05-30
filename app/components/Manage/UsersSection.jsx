@@ -4,6 +4,7 @@ import styles from "./UsersSection.module.css";
 import { getCookie } from "@/utils/cookie";
 import { useState, useEffect } from "react";
 import TeamSelector from "../TeamSelector/TeamSelector";
+import LoadingWheel from "@/app/components/LoadingWheel/LoadingWheel";
 
 export default function UsersSection() {
   const [myProfile, setMyProfile] = useState({});
@@ -12,6 +13,8 @@ export default function UsersSection() {
   const [selectedTeamId, setSelectedTeamId] = useState("");
   const [myRole, setMyRole] = useState("");
   const [isLoadingTeams, setIsLoadingTeams] = useState(true);
+  const [isLoadingProfile, setIsLoadingProfile] = useState(true);
+  const [isLoadingMembers, setIsLoadingMembers] = useState(false);
   const [pendingDelete, setPendingDelete] = useState(null);
   const [isMemberChanged, setIsMemberChanged] = useState(false);
 
@@ -41,16 +44,21 @@ export default function UsersSection() {
 
   useEffect(() => {
     const fetchMyProfile = async () => {
-      const response = await fetch("/api/user/profile", {
-        method: "POST",
-        body: JSON.stringify({
-          access_token: getCookie("sb-access-token"),
-          refresh_token: getCookie("sb-refresh-token"),
-        }),
-      });
-      const data = await response.json();
-      if (data.success && data.profile) {
-        setMyProfile(data.profile);
+      setIsLoadingProfile(true);
+      try {
+        const response = await fetch("/api/user/profile", {
+          method: "POST",
+          body: JSON.stringify({
+            access_token: getCookie("sb-access-token"),
+            refresh_token: getCookie("sb-refresh-token"),
+          }),
+        });
+        const data = await response.json();
+        if (data.success && data.profile) {
+          setMyProfile(data.profile);
+        }
+      } finally {
+        setIsLoadingProfile(false);
       }
     };
     fetchMyProfile();
@@ -60,21 +68,26 @@ export default function UsersSection() {
     if (!selectedTeamId) return;
 
     const fetchMembers = async () => {
-      const response = await fetch("/api/team/members", {
-        method: "POST",
-        body: JSON.stringify({
-          access_token: getCookie("sb-access-token"),
-          refresh_token: getCookie("sb-refresh-token"),
-          teamId: selectedTeamId,
-        }),
-      });
-      const data = await response.json();
+      // setIsLoadingMembers(true);
+      try {
+        const response = await fetch("/api/team/members", {
+          method: "POST",
+          body: JSON.stringify({
+            access_token: getCookie("sb-access-token"),
+            refresh_token: getCookie("sb-refresh-token"),
+            teamId: selectedTeamId,
+          }),
+        });
+        const data = await response.json();
 
-      if (data.success && Array.isArray(data.members)) {
-        setMembers(data.members);
-      }
-      if (data.success && data.myRole) {
-        setMyRole(data.myRole);
+        if (data.success && Array.isArray(data.members)) {
+          setMembers(data.members);
+        }
+        if (data.success && data.myRole) {
+          setMyRole(data.myRole);
+        }
+      } finally {
+        // setIsLoadingMembers(false);
       }
     };
     fetchMembers();
@@ -124,12 +137,14 @@ export default function UsersSection() {
     setIsMemberChanged(true);
   };
 
+  if (isLoadingTeams || isLoadingProfile || isLoadingMembers) {
+    return <LoadingWheel centered label="로딩 중..." />;
+  }
+
   return (
     <>
       <div className={styles.teamSelectorWrap}>
-        {isLoadingTeams ? (
-          <p className={styles.cardDescription}>팀 목록을 불러오는 중…</p>
-        ) : teams.length === 0 ? (
+        {teams.length === 0 ? (
           <p className={styles.cardDescription}>참여 중인 팀이 없습니다.</p>
         ) : (
           <div className={styles.teamSelectorRow}>

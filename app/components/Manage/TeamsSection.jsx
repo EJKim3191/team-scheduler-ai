@@ -4,6 +4,7 @@ import styles from "./TeamsSection.module.css";
 import { getCookie } from "@/utils/cookie";
 import { useState, useEffect } from "react";
 import { IsoToTimeStamp } from "@/utils/timeStamp";
+import LoadingWheel from "@/app/components/LoadingWheel/LoadingWheel";
 
 export default function TeamsSection() {
   const [teams, setTeams] = useState([]);
@@ -32,6 +33,10 @@ export default function TeamsSection() {
     };
     fetchTeams();
   }, []);
+
+  if (isLoadingTeams) {
+    return <LoadingWheel centered label="로딩 중..." />;
+  }
 
   return (
     <>

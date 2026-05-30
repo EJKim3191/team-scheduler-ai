@@ -3,6 +3,7 @@ import styles from "./OverviewSection.module.css";
 import { getCookie } from "@/utils/cookie";
 import { useState, useEffect } from "react";
 import { IsoToTimeStamp } from "@/utils/timeStamp";
+import LoadingWheel from "@/app/components/LoadingWheel/LoadingWheel";
 
 export default function OverviewSection() {
   const [logs, setLogs] = useState([]);
@@ -77,7 +78,7 @@ export default function OverviewSection() {
   }, []);
 
   if (isLoadingLogs || isLoadingIssues) {
-    return <div>Loading...</div>;
+    return <LoadingWheel centered label="로딩 중..." />;
   }
 
   return (

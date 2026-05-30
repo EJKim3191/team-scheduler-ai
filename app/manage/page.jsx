@@ -146,6 +146,24 @@ function NavIcon({ name }) {
           />
         </svg>
       );
+    case "home":
+      return (
+        <svg
+          className={styles.navIcon}
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          aria-hidden="true"
+        >
+          <path
+            d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1v-9.5Z"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinejoin="round"
+          />
+        </svg>
+      );
     default:
       return null;
   }
@@ -194,6 +212,11 @@ export default async function ManagePage({ searchParams }) {
         <div className={styles.layout}>
           <aside className={styles.sidebar} aria-label="관리 메뉴">
             <div className={styles.sidebarInner}>
+              <Link href="/" className={styles.homeLink}>
+                <NavIcon name="home" />
+                <span className={styles.navLabel}>메인으로</span>
+              </Link>
+
               <div>
                 <div className={styles.sidebarTitleRow}>
                   <div className={styles.sidebarTitle}>Manage</div>
