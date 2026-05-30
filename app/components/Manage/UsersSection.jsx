@@ -12,6 +12,8 @@ export default function UsersSection() {
   const [selectedTeamId, setSelectedTeamId] = useState("");
   const [myRole, setMyRole] = useState("");
   const [isLoadingTeams, setIsLoadingTeams] = useState(true);
+  const [pendingDelete, setPendingDelete] = useState(null);
+  const [isMemberChanged, setIsMemberChanged] = useState(false);
 
   useEffect(() => {
     const fetchTeams = async () => {
@@ -76,20 +78,50 @@ export default function UsersSection() {
       }
     };
     fetchMembers();
-  }, [selectedTeamId]);
+  }, [selectedTeamId, isMemberChanged]);
 
   const selectedTeam = teams.find(
     (team) => team.team_id === Number(selectedTeamId),
   );
 
-  const handleDelete = async (userId) => {
-    // const response = await fetch("/api/team/members", {
-    //   method: "DELETE",
-    //   body: JSON.stringify({
-    //     access_token: getCookie("sb-access-token"),
-    //     refresh_token: getCookie("sb-refresh-token"),
-    //   }),
-    // });
+  useEffect(() => {
+    if (!pendingDelete) return;
+
+    const handleEscape = (event) => {
+      if (event.key === "Escape") setPendingDelete(null);
+    };
+
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    document.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [pendingDelete]);
+
+  const handleDelete = async (profile, teamId) => {
+    const response = await fetch("/api/team/members", {
+      method: "DELETE",
+      body: JSON.stringify({
+        access_token: getCookie("sb-access-token"),
+        refresh_token: getCookie("sb-refresh-token"),
+        profile: profile,
+        teamId: teamId,
+      }),
+    });
+    const data = await response.json();
+    if (data.success) {
+      setIsMemberChanged(false);
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!pendingDelete) return;
+    await handleDelete(pendingDelete, selectedTeamId);
+    setPendingDelete(null);
+    setIsMemberChanged(true);
   };
 
   return (
@@ -155,8 +187,11 @@ export default function UsersSection() {
                 {myRole === "owner" &&
                   myProfile.email !== row.profiles.user_id && (
                     <button
+                      type="button"
                       className={styles.deleteButton}
-                      onClick={() => handleDelete(row.profiles.user_id)}
+                      onClick={() =>
+                        setPendingDelete(row.profiles, selectedTeamId)
+                      }
                     >
                       삭제
                     </button>
@@ -173,6 +208,51 @@ export default function UsersSection() {
           사용자 권한 변경/팀 접근 내역을 기록하고 확인할 수 있게 확장해 주세요.
         </p>
       </div>
+
+      {pendingDelete && (
+        <div
+          className={styles.modalOverlay}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="delete-modal-title"
+        >
+          <button
+            type="button"
+            className={styles.modalBackdrop}
+            aria-label="삭제 취소"
+            onClick={() => setPendingDelete(null)}
+          />
+          <div className={styles.modalPanel}>
+            <h3 id="delete-modal-title" className={styles.modalTitle}>
+              팀원 삭제
+            </h3>
+            <p className={styles.modalDescription}>
+              <strong>{pendingDelete.user_name}</strong>({pendingDelete.user_id}
+              )님을 팀에서 제거할까요?
+              <br />
+              해당 사용자의 팀의 스케줄도 함께 삭제되며,
+              <br />
+              해당 작업은 되돌릴 수 없습니다.
+            </p>
+            <div className={styles.modalActions}>
+              <button
+                type="button"
+                className={styles.modalCancelButton}
+                onClick={() => setPendingDelete(null)}
+              >
+                취소
+              </button>
+              <button
+                type="button"
+                className={styles.modalConfirmButton}
+                onClick={handleConfirmDelete}
+              >
+                삭제
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

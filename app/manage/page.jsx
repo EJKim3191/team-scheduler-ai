@@ -12,7 +12,8 @@ const MENU_ITEMS = [
   { key: "overview", label: "대시보드" },
   { key: "teams", label: "팀 관리" },
   { key: "users", label: "사용자 관리" },
-  { key: "settings", label: "설정" },
+  // TODO: TBD 설정 설계 및 구현 완료 시 주석 해제
+  // { key: "settings", label: "설정" },
 ];
 
 function getActiveTab(tab) {
@@ -157,7 +158,9 @@ function Content({ tab }) {
     case "users":
       return <UsersSection />;
     case "settings":
-      return <SettingsSection />;
+      // TODO: TBD 설정 설계 및 구현 완료 시 주석 해제
+      // return <SettingsSection />;
+      return null;
     case "overview":
     default:
       return <OverviewSection />;

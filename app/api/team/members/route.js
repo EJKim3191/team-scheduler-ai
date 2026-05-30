@@ -19,7 +19,8 @@ async function getTeamMembers(access_token, refresh_token, teamId) {
     role,
     profiles (
       user_name,
-      user_id
+      user_id,
+      id
     )
   `,
     )
@@ -60,6 +61,45 @@ async function getMyRole(access_token, refresh_token, teamId) {
   };
 }
 
+async function deleteTeamMember(access_token, refresh_token, profile, teamId) {
+  const supabase = await createClient();
+  const { data: sessionData, error: sessionError } =
+    await supabase.auth.setSession({
+      access_token: access_token,
+      refresh_token: refresh_token,
+    });
+  if (sessionError) {
+    return { success: false, message: sessionError.message };
+  }
+  const { data: teamMembers, error } = await supabase
+    .from("team_members")
+    .delete()
+    .eq("profile_id", profile.id)
+    .eq("team_id", teamId);
+
+  if (error) {
+    return { success: false, message: error.message };
+  }
+
+  const { data: userSchedules, error: userSchedulesError } = await supabase
+    .from("user_schedules")
+    .delete()
+    .eq("profile_id", profile.id)
+    .eq("team_id", teamId);
+
+  if (userSchedulesError) {
+    return {
+      success: false,
+      message: userSchedulesError.message,
+      userSchedules: [],
+    };
+  }
+  return {
+    success: true,
+    message: "Team member deleted successfully",
+  };
+}
+
 async function POST(req) {
   const { access_token, refresh_token, teamId } = await req.json();
   const response = await getTeamMembers(access_token, refresh_token, teamId);
@@ -79,4 +119,18 @@ async function POST(req) {
   });
 }
 
-export { POST };
+async function DELETE(req) {
+  const { access_token, refresh_token, profile, teamId } = await req.json();
+  const response = await deleteTeamMember(
+    access_token,
+    refresh_token,
+    profile,
+    teamId,
+  );
+  if (!response.success) {
+    return NextResponse.json({ success: false, message: response.message });
+  }
+  return NextResponse.json({ success: true, message: response.message });
+}
+
+export { POST, DELETE };
