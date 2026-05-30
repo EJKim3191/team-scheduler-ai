@@ -1,6 +1,15 @@
-export function IsoToTimeStamp(isoString) {
+export function IsoToTimeStamp(isoString, includeLang = false) {
   const date = new Date(isoString);
-
+  if (includeLang && typeof includeLang === "string") {
+    return date.toLocaleString(includeLang, {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  }
   const weekday = date.toLocaleString("en-US", { weekday: "short" });
   const month = date.toLocaleString("en-US", { month: "short" });
   const day = date.getDate();

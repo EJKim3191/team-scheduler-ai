@@ -1,25 +1,108 @@
+"use client";
 import styles from "./OverviewSection.module.css";
+import { getCookie } from "@/utils/cookie";
+import { useState, useEffect } from "react";
+import { IsoToTimeStamp } from "@/utils/timeStamp";
 
 export default function OverviewSection() {
+  const [logs, setLogs] = useState([]);
+  const [issues, setIssues] = useState([]);
+  const [isLoadingLogs, setIsLoadingLogs] = useState(true);
+  const [isLoadingIssues, setIsLoadingIssues] = useState(true);
+  const [calculatedIssues, setCalculatedIssues] = useState({
+    processed: "0%",
+    open: 0,
+    notParticipated: 0,
+  });
+
+  useEffect(() => {
+    const fetchLogs = async () => {
+      setIsLoadingLogs(true);
+      const response = await fetch("/api/user/logs", {
+        method: "POST",
+        body: JSON.stringify({
+          access_token: getCookie("sb-access-token"),
+          refresh_token: getCookie("sb-refresh-token"),
+        }),
+      });
+      const data = await response.json();
+      if (data.success && Array.isArray(data.logs)) {
+        setLogs(data.logs);
+      }
+      setIsLoadingLogs(false);
+    };
+    fetchLogs();
+  }, []);
+
+  useEffect(() => {
+    const fetchIssues = async () => {
+      setIsLoadingIssues(true);
+      const response = await fetch("/api/user/issue", {
+        method: "POST",
+        body: JSON.stringify({
+          access_token: getCookie("sb-access-token"),
+          refresh_token: getCookie("sb-refresh-token"),
+        }),
+      });
+      const data = await response.json();
+      if (!data.success) {
+        return;
+      }
+
+      setIssues(data.issues);
+      const openIssues = data.issues.filter((issue) => issue.status === "open");
+
+      const responseParticipation = await fetch("/api/user/issue/participate", {
+        method: "POST",
+        body: JSON.stringify({
+          access_token: getCookie("sb-access-token"),
+          refresh_token: getCookie("sb-refresh-token"),
+          issues: openIssues,
+        }),
+      });
+      const dataParticipation = await responseParticipation.json();
+      if (!dataParticipation.success) {
+        return;
+      }
+
+      setCalculatedIssues({
+        processed: `${((data.issues.filter((issue) => issue.status === "closed").length / data.issues.length) * 100).toFixed(2)}%`,
+        open: data.issues.filter((issue) => issue.status === "open").length,
+        notParticipated: dataParticipation.userSchedules,
+      });
+      setIsLoadingIssues(false);
+    };
+
+    fetchIssues();
+  }, []);
+
+  if (isLoadingLogs || isLoadingIssues) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <>
       <div className={styles.card}>
         <div className={styles.cardHeader}>
-          <h2 className={styles.cardTitle}>시스템 상태</h2>
+          <h2 className={styles.cardTitle}>스케줄 상태</h2>
           <div className={styles.cardMeta}>오늘 기준</div>
         </div>
         <div className={styles.statusRow}>
           <div className={styles.statusItem}>
-            <div className={styles.statusLabel}>업타임</div>
-            <div className={styles.statusValue}>99.98%</div>
+            <div className={styles.statusLabel}>처리된 스케줄</div>
+            <div className={styles.statusValue}>
+              {calculatedIssues.processed}
+            </div>
           </div>
           <div className={styles.statusItem}>
-            <div className={styles.statusLabel}>미처리 요청</div>
-            <div className={styles.statusValue}>0</div>
+            <div className={styles.statusLabel}>오픈 이슈</div>
+            <div className={styles.statusValue}>{calculatedIssues.open}</div>
           </div>
           <div className={styles.statusItem}>
-            <div className={styles.statusLabel}>에러</div>
-            <div className={styles.statusValue}>2</div>
+            <div className={styles.statusLabel}>미참여 이슈</div>
+            <div className={styles.statusValue}>
+              {calculatedIssues.notParticipated}
+            </div>
           </div>
         </div>
       </div>
@@ -27,20 +110,18 @@ export default function OverviewSection() {
       <div className={styles.card}>
         <h2 className={styles.cardTitle}>최근 활동</h2>
         <ul className={styles.activityList}>
-          <li>
-            팀 코드가 생성되었습니다: <span className={styles.mono}>AB12CD</span>
-          </li>
-          <li>
-            일정 동기화 작업이 완료되었습니다:{" "}
-            <span className={styles.mono}>2026-05-27</span>
-          </li>
-          <li>
-            권한 변경이 발생했습니다:{" "}
-            <span className={styles.mono}>관리자 → 편집</span>
-          </li>
+          {logs.map((log) => (
+            <li key={log.id} className={styles.activityItem}>
+              <span className={styles.activityDescription}>
+                {log.description}
+              </span>
+              <time className={styles.activityTime} dateTime={log.created_at}>
+                {IsoToTimeStamp(log.created_at, "ko-KR")}
+              </time>
+            </li>
+          ))}
         </ul>
       </div>
     </>
   );
 }
-
