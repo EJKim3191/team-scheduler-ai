@@ -1,11 +1,11 @@
 import { createClient } from "@/lib/supabase/server";
 const { NextResponse } = require("next/server");
 
-async function createTeam(teamCode, teamName, token, refresh_token) {
+async function createTeam(teamCode, teamName, access_token, refresh_token) {
   const supabase = await createClient();
   const { data: sessionData, error: sessionError } =
     await supabase.auth.setSession({
-      access_token: token,
+      access_token: access_token,
       refresh_token: refresh_token,
     });
 
@@ -89,7 +89,7 @@ async function checkTeamCode(teamCode) {
 }
 
 async function POST(req) {
-  const { teamCode, teamName, token, refresh_token } = await req.json();
+  const { teamCode, teamName, access_token, refresh_token } = await req.json();
 
   const teamCount = await checkTeamCount();
   if (!teamCount.success) {
@@ -103,7 +103,7 @@ async function POST(req) {
     const response2 = await createTeam(
       teamCode,
       teamName,
-      token,
+      access_token,
       refresh_token,
     );
 

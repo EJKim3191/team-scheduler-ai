@@ -65,9 +65,16 @@ export default function OverviewSection() {
       if (!dataParticipation.success) {
         return;
       }
-
+      console.log(
+        "calculatedIssues",
+        data.issues.filter((issue) => issue.status === "closed").length,
+        data.issues.length,
+      );
       setCalculatedIssues({
-        processed: `${((data.issues.filter((issue) => issue.status === "closed").length / data.issues.length) * 100).toFixed(2)}%`,
+        processed:
+          data.issues.length > 0
+            ? `${((data.issues.filter((issue) => issue.status === "closed").length / data.issues.length) * 100).toFixed(2)}%`
+            : "0%",
         open: data.issues.filter((issue) => issue.status === "open").length,
         notParticipated: dataParticipation.userSchedules,
       });
