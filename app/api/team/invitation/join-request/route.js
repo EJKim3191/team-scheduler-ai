@@ -19,7 +19,6 @@ async function sendJoinRequest(access_token, refresh_token, teamCode) {
     .eq("team_code", teamCode);
 
   if (teamError) {
-    console.log("teamError", teamError);
     return { success: false, message: teamError.message };
   }
   if (teamData.length === 0) {
@@ -38,7 +37,7 @@ async function sendJoinRequest(access_token, refresh_token, teamCode) {
     }
     return { success: false, message: teamAccessRequestError.message };
   }
-  return { success: true, message: "Join request sent" };
+  return { success: true, message: "팀 가입 요청이 전송되었습니다." };
 }
 
 async function POST(req) {

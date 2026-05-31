@@ -75,6 +75,7 @@ export default function MakeTeamPage() {
     const data = await response.json();
     if (data.success) {
       alert(data.message);
+      setInviteTeamCode("");
     } else {
       alert(data.message);
     }
