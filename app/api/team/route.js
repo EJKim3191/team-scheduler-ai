@@ -37,14 +37,26 @@ async function createTeam(teamCode, teamName, access_token, refresh_token) {
 
   return {
     success: true,
-    message: "팀 멤버가 추가되었습니다.",
+    message: "팀이 생성되었습니다.",
     teamId: response.data[0].team_id,
   };
 }
 
-async function checkTeamCount() {
+async function checkTeamCount(access_token, refresh_token) {
   const supabase = await createClient();
-  const response = await supabase.from("team").select("*");
+  const { data: sessionData, error: sessionError } =
+    await supabase.auth.setSession({
+      access_token: access_token,
+      refresh_token: refresh_token,
+    });
+
+  if (sessionError) {
+    return { success: false, message: sessionError.message };
+  }
+  const response = await supabase
+    .from("team_members")
+    .select("*")
+    .eq("profile_id", sessionData.user.id);
 
   if (response.error) {
     return { success: false, message: response.error.message };
@@ -91,7 +103,7 @@ async function checkTeamCode(teamCode) {
 async function POST(req) {
   const { teamCode, teamName, access_token, refresh_token } = await req.json();
 
-  const teamCount = await checkTeamCount();
+  const teamCount = await checkTeamCount(access_token, refresh_token);
   if (!teamCount.success) {
     return NextResponse.json({ success: false, message: teamCount.message });
   }

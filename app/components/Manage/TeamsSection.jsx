@@ -2,37 +2,120 @@
 
 import styles from "./TeamsSection.module.css";
 import { getCookie } from "@/utils/cookie";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { IsoToTimeStamp } from "@/utils/timeStamp";
 import LoadingWheel from "@/app/components/LoadingWheel/LoadingWheel";
+import { generateSmartCode, validateCodeFormat } from "@/utils/teamCode";
+
+function RefreshIcon() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M20 12a8 8 0 1 1-2.34-5.66"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <path
+        d="M20 4v6h-6"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
 
 export default function TeamsSection() {
   const [teams, setTeams] = useState([]);
   const [isLoadingTeams, setIsLoadingTeams] = useState(true);
+  const [teamName, setTeamName] = useState("");
+  const [createTeamCode, setCreateTeamCode] = useState("");
+  const [isTeamCodeGenerated, setIsTeamCodeGenerated] = useState(false);
+  const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
+  const [isCreatingTeam, setIsCreatingTeam] = useState(false);
+
+  const fetchTeams = useCallback(async ({ withLoader = false } = {}) => {
+    if (withLoader) setIsLoadingTeams(true);
+    try {
+      const response = await fetch("/api/team/info", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          access_token: getCookie("sb-access-token"),
+          refresh_token: getCookie("sb-refresh-token"),
+          additionalInfo: true,
+        }),
+      });
+      const data = await response.json();
+      if (data.success && Array.isArray(data.teams)) {
+        setTeams(data.teams);
+      }
+    } finally {
+      if (withLoader) setIsLoadingTeams(false);
+    }
+  }, []);
 
   useEffect(() => {
-    const fetchTeams = async () => {
-      setIsLoadingTeams(true);
-      try {
-        const response = await fetch("/api/team/info", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            access_token: getCookie("sb-access-token"),
-            refresh_token: getCookie("sb-refresh-token"),
-            additionalInfo: true,
-          }),
-        });
-        const data = await response.json();
-        if (data.success && Array.isArray(data.teams)) {
-          setTeams(data.teams);
-        }
-      } finally {
-        setIsLoadingTeams(false);
+    fetchTeams({ withLoader: true });
+  }, [fetchTeams]);
+
+  useEffect(() => {
+    const isValid =
+      teamName.trim().length > 0 && validateCodeFormat(createTeamCode);
+    setIsSubmitDisabled(!isValid);
+  }, [teamName, createTeamCode]);
+
+  const onTeamNameChange = (event) => {
+    if (event.target.value.length > 10) return;
+    setTeamName(event.target.value);
+  };
+
+  const onTeamCodeGenerate = () => {
+    setCreateTeamCode(generateSmartCode());
+    setIsTeamCodeGenerated(true);
+  };
+
+  const onTeamCodeRefresh = () => {
+    setCreateTeamCode(generateSmartCode());
+  };
+
+  const onSubmitCreateTeam = async () => {
+    if (isSubmitDisabled || isCreatingTeam) return;
+
+    setIsCreatingTeam(true);
+    try {
+      const response = await fetch("/api/team", {
+        method: "POST",
+        body: JSON.stringify({
+          teamName: teamName.trim(),
+          teamCode: createTeamCode,
+          access_token: getCookie("sb-access-token"),
+          refresh_token: getCookie("sb-refresh-token"),
+        }),
+      });
+      const data = await response.json();
+
+      if (data.success) {
+        setTeamName("");
+        setCreateTeamCode("");
+        setIsTeamCodeGenerated(false);
+        await fetchTeams();
+        alert(data.message ?? "팀이 생성되었습니다.");
+      } else {
+        alert(data.message ?? "팀 생성에 실패했습니다.");
       }
-    };
-    fetchTeams();
-  }, []);
+    } finally {
+      setIsCreatingTeam(false);
+    }
+  };
 
   if (isLoadingTeams) {
     return <LoadingWheel centered label="로딩 중..." />;
@@ -64,10 +147,56 @@ export default function TeamsSection() {
       </div>
 
       <div className={styles.card}>
-        <h2 className={styles.cardTitle}>초대/권한 관리</h2>
-        <p className={styles.cardDescription}>
-          추후 팀 초대 코드 생성, 팀 역할(관리자/일반) 관리 기능을 연결하세요.
-        </p>
+        <h2 className={styles.cardTitle}>팀 생성</h2>
+        <div className={styles.createForm}>
+          <input
+            className={styles.input}
+            type="text"
+            name="teamName"
+            placeholder="팀 이름"
+            value={teamName}
+            onChange={onTeamNameChange}
+            autoComplete="organization"
+            aria-label="팀 이름"
+          />
+
+          <div className={styles.teamCodeSlot}>
+            {isTeamCodeGenerated ? (
+              <div className={styles.teamCodeGeneratedRow}>
+                <span className={styles.teamCodeDisplay}>{createTeamCode}</span>
+                <button
+                  type="button"
+                  className={styles.teamCodeRefreshButton}
+                  onClick={onTeamCodeRefresh}
+                  aria-label="팀 코드 다시 생성"
+                >
+                  <RefreshIcon />
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                className={styles.generateButton}
+                onClick={onTeamCodeGenerate}
+              >
+                팀 코드 생성
+              </button>
+            )}
+          </div>
+
+          <button
+            type="button"
+            className={styles.submitButton}
+            onClick={onSubmitCreateTeam}
+            disabled={isSubmitDisabled || isCreatingTeam}
+          >
+            {isCreatingTeam ? "생성 중..." : "팀 생성"}
+          </button>
+        </div>
+      </div>
+
+      <div className={styles.card}>
+        <h2 className={styles.cardTitle}>팀 초대 요청</h2>
       </div>
     </>
   );
