@@ -111,6 +111,11 @@
   min-width: 120px;
 }
 
+.inputTeamCode {
+  font-family: var(--font-geist-mono);
+  letter-spacing: 0.04em;
+}
+
 .teamCodeSlot {
   flex: 0 0 auto;
   display: flex;

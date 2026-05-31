@@ -41,6 +41,9 @@ export default function TeamsSection() {
   const [isTeamCodeGenerated, setIsTeamCodeGenerated] = useState(false);
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
   const [isCreatingTeam, setIsCreatingTeam] = useState(false);
+  const [inviteTeamCode, setInviteTeamCode] = useState("");
+  const [isJoinSubmitDisabled, setIsJoinSubmitDisabled] = useState(true);
+  const [isSendingJoinRequest, setIsSendingJoinRequest] = useState(false);
 
   const fetchTeams = useCallback(async ({ withLoader = false } = {}) => {
     if (withLoader) setIsLoadingTeams(true);
@@ -72,6 +75,10 @@ export default function TeamsSection() {
       teamName.trim().length > 0 && validateCodeFormat(createTeamCode);
     setIsSubmitDisabled(!isValid);
   }, [teamName, createTeamCode]);
+
+  useEffect(() => {
+    setIsJoinSubmitDisabled(inviteTeamCode.trim().length === 0);
+  }, [inviteTeamCode]);
 
   const onTeamNameChange = (event) => {
     if (event.target.value.length > 10) return;
@@ -114,6 +121,42 @@ export default function TeamsSection() {
       }
     } finally {
       setIsCreatingTeam(false);
+    }
+  };
+
+  const onInviteTeamCodeChange = (event) => {
+    setInviteTeamCode(event.target.value);
+  };
+
+  const onInviteTeamCodeKeyDown = (event) => {
+    if (event.key === "Enter") {
+      onSubmitJoinRequest();
+    }
+  };
+
+  const onSubmitJoinRequest = async () => {
+    if (isJoinSubmitDisabled || isSendingJoinRequest) return;
+
+    setIsSendingJoinRequest(true);
+    try {
+      const response = await fetch("/api/team/invitation/join-request", {
+        method: "POST",
+        body: JSON.stringify({
+          teamCode: inviteTeamCode.trim(),
+          access_token: getCookie("sb-access-token"),
+          refresh_token: getCookie("sb-refresh-token"),
+        }),
+      });
+      const data = await response.json();
+
+      if (data.success) {
+        setInviteTeamCode("");
+        alert(data.message ?? "팀 가입 요청이 전송되었습니다.");
+      } else {
+        alert(data.message ?? "팀 가입 요청에 실패했습니다.");
+      }
+    } finally {
+      setIsSendingJoinRequest(false);
     }
   };
 
@@ -197,6 +240,29 @@ export default function TeamsSection() {
 
       <div className={styles.card}>
         <h2 className={styles.cardTitle}>팀 초대 요청</h2>
+        <div className={styles.createForm}>
+          <input
+            className={`${styles.input} ${styles.inputTeamCode}`}
+            type="text"
+            name="inviteTeamCode"
+            placeholder="팀 코드"
+            value={inviteTeamCode}
+            onChange={onInviteTeamCodeChange}
+            onKeyDown={onInviteTeamCodeKeyDown}
+            autoComplete="off"
+            spellCheck={false}
+            aria-label="팀 코드"
+          />
+
+          <button
+            type="button"
+            className={styles.submitButton}
+            onClick={onSubmitJoinRequest}
+            disabled={isJoinSubmitDisabled || isSendingJoinRequest}
+          >
+            {isSendingJoinRequest ? "요청 중..." : "초대 요청"}
+          </button>
+        </div>
       </div>
     </>
   );
