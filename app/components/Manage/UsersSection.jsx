@@ -108,7 +108,7 @@ export default function UsersSection() {
 
   useEffect(() => {
     if (!selectedTeamId) return;
-
+    setIsMemberChanged(false);
     const fetchMembers = async () => {
       // setIsLoadingMembers(true);
       try {
@@ -168,7 +168,7 @@ export default function UsersSection() {
     });
     const data = await response.json();
     if (data.success) {
-      setIsMemberChanged(false);
+      setIsMemberChanged(true);
     }
   };
 
@@ -184,13 +184,28 @@ export default function UsersSection() {
       });
       const data = await response.json();
       if (data.success) {
-        console.log("data", data);
         setInvitationsSent(data.invitationsSent);
         setInvitationsReceived(data.invitationsReceived);
       }
     };
     fetchInvitations();
-  }, [selectedTeamId]);
+  }, [selectedTeamId, isMemberChanged]);
+
+  const handleApprove = async (invitation, action) => {
+    const response = await fetch("/api/team/invitation/approve", {
+      method: "POST",
+      body: JSON.stringify({
+        access_token: getCookie("sb-access-token"),
+        refresh_token: getCookie("sb-refresh-token"),
+        invitation: invitation,
+        action: action,
+      }),
+    });
+    const data = await response.json();
+    if (data.success) {
+      setIsMemberChanged(true);
+    }
+  };
 
   const handleConfirmDelete = async () => {
     if (!pendingDelete) return;
@@ -294,7 +309,7 @@ export default function UsersSection() {
             />
           </div>
           {invitationsReceived.map((row) =>
-            row.profile ? (
+            row.profile && row.status === "pending" ? (
               <div key={row.id} className={styles.invitationTableRow}>
                 <div className={styles.invitationTableCell}>
                   {row.profile.user_name}
@@ -312,6 +327,7 @@ export default function UsersSection() {
                     type="button"
                     className={`${styles.invitationIconButton} ${styles.invitationIconButtonApprove}`}
                     aria-label="승인"
+                    onClick={() => handleApprove(row, "approve")}
                   >
                     <ApproveIcon />
                   </button>
@@ -319,6 +335,7 @@ export default function UsersSection() {
                     type="button"
                     className={`${styles.invitationIconButton} ${styles.invitationIconButtonCancel}`}
                     aria-label="취소"
+                    onClick={() => handleApprove(row, "cancel")}
                   >
                     <CancelIcon />
                   </button>
@@ -329,7 +346,8 @@ export default function UsersSection() {
         </div>
       </div>
 
-      <div className={styles.card}>
+      {/* TODO: 보낸 요청 추가 // 현재 이메일으로 요청을 전송 시 프리티어에 알맞지 않는 요청 수가 많아짐 */}
+      {/* <div className={styles.card}>
         <div className={styles.cardHeader}>
           <h2 className={styles.cardTitle}>보낸 요청</h2>
         </div>
@@ -349,7 +367,7 @@ export default function UsersSection() {
             </div>
           ))}
         </div>
-      </div>
+      </div> */}
 
       {pendingDelete && (
         <div

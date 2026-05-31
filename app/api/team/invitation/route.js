@@ -19,8 +19,6 @@ async function getInvitationSent(access_token, refresh_token, teamId) {
     return { success: false, message: invitationsError.message };
   }
 
-  console.log("invitationsSent", invitations);
-  console.log("--------------------------------");
   return {
     success: true,
     message: invitations.message,
@@ -36,7 +34,6 @@ async function getInvitationReceived(access_token, refresh_token, teamId) {
       refresh_token: refresh_token,
     });
 
-  console.log("teamId", teamId);
   if (sessionError) {
     return { success: false, message: sessionError.message };
   }
@@ -54,7 +51,6 @@ async function getInvitationReceived(access_token, refresh_token, teamId) {
       .select("user_name, user_id")
       .eq("id", invitation.profile_id);
 
-    console.log("profile", profile);
     if (profileError) {
       return { success: false, message: profileError.message };
     }
@@ -68,8 +64,6 @@ async function getInvitationReceived(access_token, refresh_token, teamId) {
     return { success: false, message: invitationsError.message };
   }
 
-  console.log("invitationsReceived", invitationsWithProfile);
-  console.log("--------------------------------");
   return {
     success: true,
     message: invitations.message,
@@ -101,9 +95,6 @@ async function POST(req) {
       message: responseReceived.message,
     });
   }
-
-  console.log("responseSent", responseSent);
-  console.log("responseReceived", responseReceived);
 
   return NextResponse.json({
     success: true,
