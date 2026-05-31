@@ -6,6 +6,7 @@ import SignUpPage from "./SignUp";
 import { useRouter } from "next/navigation";
 import useTeam from "@/app/store/team";
 import useUser from "@/app/store/user";
+import { setCookie } from "@/utils/cookie";
 
 function LoginPage() {
   const router = useRouter();
@@ -19,9 +20,6 @@ function LoginPage() {
   const [isSignup, setIsSignup] = useState(false);
 
   // helper로 분리
-  const setCookie = (key, value) => {
-    document.cookie = `${key}=${value}; path=/; max-age=3600;`;
-  };
 
   const onIdInput = (e) => {
     setId(e.target.value);
@@ -43,7 +41,6 @@ function LoginPage() {
       const data = await response.json();
 
       if (data.success) {
-        // localStorage.setItem("user_id", data.id);
         setCookie("sb-access-token", data.access_token);
         setCookie("sb-refresh-token", data.refresh_token);
         setTeamCode(data.teamCode);

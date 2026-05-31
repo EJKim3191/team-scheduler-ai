@@ -16,32 +16,44 @@ export default async function Home({ searchParams }) {
   const params = await searchParams;
   const teamId = params.teamId;
   const cookieStore = await cookies();
-  const token = cookieStore.get("sb-access-token");
+  const access_token = cookieStore.get("sb-access-token");
   const refresh_token = cookieStore.get("sb-refresh-token");
 
-  if (!token) {
+  if (!access_token || !refresh_token) {
     redirect("/login");
   }
 
   const supabase = await createClient();
-  const { error: sessionError } = await supabase.auth.setSession({
-    access_token: token.value,
-    refresh_token: refresh_token.value,
-  });
+  const { data: sessionData, error: sessionError } =
+    await supabase.auth.setSession({
+      access_token: access_token.value,
+      refresh_token: refresh_token.value,
+    });
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("user_name, id");
+    .select("user_name, id")
+    .eq("id", sessionData.user.id);
+
+  // 내가 있는 팀
+  const { data: myTeams } = await supabase
+    .from("team_members")
+    .select("team_id")
+    .eq("profile_id", sessionData.user.id);
+
+  if (myTeams.length === 0) {
+    redirect("/make-team");
+  }
 
   const { data: team } = await supabase
     .from("team")
-    .select("team_id, team_code, team_name");
+    .select("team_id, team_code, team_name")
+    .in(
+      "team_id",
+      myTeams.map((team) => team.team_id),
+    );
 
   const matchedTeam = team.find((team) => team.team_id === Number(teamId));
-
-  if (team.length === 0) {
-    redirect("/make-team");
-  }
 
   const selectedTeam = matchedTeam ? matchedTeam : team[0];
 

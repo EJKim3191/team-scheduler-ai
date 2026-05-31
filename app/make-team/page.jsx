@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useCookies } from "next-client-cookies";
+import { getCookie, deleteCookie } from "@/utils/cookie";
 import { generateSmartCode, validateCodeFormat } from "@/utils/teamCode";
 
 import styles from "./Make-team.module.css";
@@ -18,10 +18,6 @@ export default function MakeTeamPage() {
     setIsTeamCodeGenerateButtonDisabled,
   ] = useState(false);
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
-
-  const cookies = useCookies();
-  const token = cookies.get("sb-access-token");
-  const refresh_token = cookies.get("sb-refresh-token");
 
   useEffect(() => {
     const isValid =
@@ -58,6 +54,32 @@ export default function MakeTeamPage() {
     setInviteTeamCode(e.target.value);
   };
 
+  const onInviteTeamCodeKeyDown = (e) => {
+    if (e.key === "Enter") {
+      onSubmitJoinRequest();
+    }
+  };
+
+  const onSubmitJoinRequest = async () => {
+    if (inviteTeamCode.trim().length === 0) {
+      return;
+    }
+    const response = await fetch("/api/team/invitation/join-request", {
+      method: "POST",
+      body: JSON.stringify({
+        teamCode: inviteTeamCode,
+        access_token: getCookie("sb-access-token"),
+        refresh_token: getCookie("sb-refresh-token"),
+      }),
+    });
+    const data = await response.json();
+    if (data.success) {
+      alert(data.message);
+    } else {
+      alert(data.message);
+    }
+  };
+
   const onSubmitCreateTeam = async () => {
     if (isSubmitDisabled) return;
     // TODO: 팀 생성 API 연결
@@ -66,8 +88,8 @@ export default function MakeTeamPage() {
       body: JSON.stringify({
         teamName: teamName,
         teamCode: createTeamCode,
-        token: token,
-        refresh_token: refresh_token,
+        access_token: getCookie("sb-access-token"),
+        refresh_token: getCookie("sb-refresh-token"),
       }),
     });
     const data = await response.json();
@@ -84,7 +106,8 @@ export default function MakeTeamPage() {
   };
 
   const handleLogout = () => {
-    document.cookie = "sb-access-token=; path=/; max-age=0;";
+    deleteCookie("sb-access-token");
+    deleteCookie("sb-refresh-token");
     router.push("/login");
     router.refresh();
   };
@@ -198,6 +221,7 @@ export default function MakeTeamPage() {
             placeholder="팀 코드를 입력하세요"
             value={inviteTeamCode}
             onChange={onInviteTeamCodeChange}
+            onKeyDown={onInviteTeamCodeKeyDown}
             autoComplete="off"
             spellCheck={false}
           />

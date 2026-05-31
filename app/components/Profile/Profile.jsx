@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { setCookie, deleteCookie } from "@/utils/cookie";
 import styles from "./Profile.module.css";
 
 function Profile({ profile, teams, selectedTeamId }) {
@@ -45,7 +46,8 @@ function Profile({ profile, teams, selectedTeamId }) {
   };
 
   const handleLogout = () => {
-    document.cookie = "sb-access-token=; path=/; max-age=0;";
+    deleteCookie("sb-access-token");
+    deleteCookie("sb-refresh-token");
     router.push("/login");
     router.refresh();
   };
