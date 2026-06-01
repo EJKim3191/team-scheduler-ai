@@ -3,30 +3,64 @@
 
 import React, { useState, useEffect } from "react";
 import styles from "./TeamMate.module.css";
-import useUser from "@/app/store/user";
+import { getCookie } from "@/utils/cookie";
+import { useSearchParams } from "next/navigation";
 
-const TeamMateComponent = () => {
-  const userData = useUser((state) => state.users);
+const TeamMateComponent = ({ teamMembers }) => {
+  const searchParams = useSearchParams();
+
   const [participatingUsers, setParticipatingUsers] = useState([]);
   const [nonParticipatingUsers, setNonParticipatingUsers] = useState([]);
 
   useEffect(() => {
-    if (!userData) return;
+    const fetchTeamSchedules = async () => {
+      const response = await fetch("/api/calendar/user", {
+        method: "POST",
+        body: JSON.stringify({
+          access_token: getCookie("sb-access-token"),
+          refresh_token: getCookie("sb-refresh-token"),
+          team_id: searchParams.get("teamId"),
+        }),
+      });
+      const data = await response.json();
+      if (searchParams.get("issueId")) {
+        data.response = data.response.filter(
+          (schedule) =>
+            Number(schedule.issue_id) === Number(searchParams.get("issueId")),
+        );
+      }
+      const profileMap = new Map();
+      data.response.forEach((item) => {
+        profileMap.set(item.profile_id, item.profiles.user_name);
+      });
+      const participatingUsers = Array.from(
+        profileMap,
+        ([profile_id, user_name]) => ({
+          profile_id,
+          user_name,
+        }),
+      );
 
-    setParticipatingUsers(userData.filter((user) => user.schedule.length > 0));
-    setNonParticipatingUsers(
-      userData.filter((user) => user.schedule.length == 0),
-    );
-  }, [userData]);
+      const nonParticipatingUsers = teamMembers
+        .filter((member) => !profileMap.has(member.profile_id))
+        .map((member) => ({
+          profile_id: member.profile_id,
+          user_name: member.profiles.user_name,
+        }));
+
+      setParticipatingUsers(participatingUsers);
+      setNonParticipatingUsers(nonParticipatingUsers);
+    };
+    fetchTeamSchedules();
+  }, [teamMembers]);
 
   return (
     <div className={styles.teamMateContainer}>
       <div>
-        참여자 목록:{" "}
-        {participatingUsers.map((user) => user.user_name).join(", ")}
+        참여자: {participatingUsers.map((user) => user.user_name).join(", ")}
       </div>
       <div>
-        미참여자 목록:{" "}
+        미참여자:{" "}
         {nonParticipatingUsers.map((user) => user.user_name).join(", ")}
       </div>
     </div>

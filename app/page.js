@@ -64,6 +64,15 @@ export default async function Home({ searchParams }) {
     .select("*")
     .eq("team_id", selectedTeam?.team_id);
 
+  const { data: teamMembers } = await supabase
+    .from("team_members")
+    .select(
+      `*, profiles (
+      user_name
+    )`,
+    )
+    .eq("team_id", selectedTeam?.team_id);
+
   //TODO: 다중 팀일 경우 선택된 팀
   return (
     <div className={styles.page}>
@@ -89,7 +98,7 @@ export default async function Home({ searchParams }) {
               <IssueSelector issues={issues} />
             </div>
             <GradientBar />
-            <TeamMateComponent />
+            <TeamMateComponent teamMembers={teamMembers} />
             <ChatComponent profile={profile} team={team} />
           </div>
         </div>

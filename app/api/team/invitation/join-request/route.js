@@ -3,14 +3,12 @@ const { NextResponse } = require("next/server");
 
 async function sendJoinRequest(access_token, refresh_token, teamCode) {
   const supabase = await createClient();
-  console.log("access_token", access_token);
   const { data: sessionData, error: sessionError } =
     await supabase.auth.setSession({
       access_token: access_token,
       refresh_token: refresh_token,
     });
   if (sessionError) {
-    console.log("sessionError", sessionError);
     return { success: false, message: sessionError.message };
   }
   const { data: teamData, error: teamError } = await supabase
