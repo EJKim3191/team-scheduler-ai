@@ -12,6 +12,7 @@ import styles from "./Calendar.module.css";
 import useCalander from "@/app/store/calander";
 import useUser from "@/app/store/user";
 import { getCookie } from "@/utils/cookie";
+import { useSearchParams } from "next/navigation";
 
 const HOURS = Array.from({ length: 24 }, (_, i) => i); // 0 ~ 23시
 
@@ -60,6 +61,9 @@ const CalendarComponent = ({ team }) => {
   const selectedIds = useCalander((state) => state.selectedIds);
   const updateSelectedIds = useCalander((state) => state.updateSelectedIds);
 
+  const searchParams = useSearchParams();
+  const issueId = searchParams.get("issueId");
+
   useEffect(() => {
     const fetchUserData = async () => {
       const response = await fetch("/api/calendar/user", {
@@ -71,6 +75,11 @@ const CalendarComponent = ({ team }) => {
         }),
       });
       const data = await response.json();
+      if (issueId) {
+        data.response = data.response.filter(
+          (schedule) => Number(schedule.issue_id) === Number(issueId),
+        );
+      }
       setUserData(data.response);
     };
     fetchUserData();

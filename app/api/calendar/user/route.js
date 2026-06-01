@@ -30,6 +30,7 @@ async function getUserData(access_token, refresh_token, team_id) {
     profile_id,
     start_time,
     schedule_id,
+    issue_id,
     profiles (
       user_name
     )
