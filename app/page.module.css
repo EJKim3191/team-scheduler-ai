@@ -153,6 +153,15 @@
   min-height: 0;
   height: 100%;
   overflow: hidden;
+  /* Calendar.gridWrap margin-top·행 높이와 IssueSelector 정렬 */
+  --calendar-grid-offset: 16px;
+  --calendar-row-height: clamp(26px, 4vw, 32px);
+}
+
+.issueSelectorWrap {
+  flex-shrink: 0;
+  width: 100%;
+  margin-top: var(--calendar-grid-offset);
 }
 
 a.primary {

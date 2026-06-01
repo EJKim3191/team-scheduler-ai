@@ -65,11 +65,6 @@ export default function OverviewSection() {
       if (!dataParticipation.success) {
         return;
       }
-      console.log(
-        "calculatedIssues",
-        data.issues.filter((issue) => issue.status === "closed").length,
-        data.issues.length,
-      );
       setCalculatedIssues({
         processed:
           data.issues.length > 0

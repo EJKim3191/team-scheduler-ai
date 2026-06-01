@@ -1,5 +1,10 @@
 import Image from "next/image";
 import styles from "./page.module.css";
+
+import { createClient } from "@/lib/supabase/server";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+
 import CalendarComponent from "./components/Calendar/Calendar";
 import ChatComponent from "./components/Chat/Chat";
 import TeamMateComponent from "./components/TeamMate/TeamMate";
@@ -8,9 +13,7 @@ import DatePickerComponent from "./components/DatePicker/DatePicker";
 import Footer from "./components/Footer/Footer";
 import Profile from "./components/Profile/Profile";
 import TeamSelector from "./components/TeamSelector/TeamSelector";
-import { createClient } from "@/lib/supabase/server";
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+import IssueSelector from "./components/IssueSelector/IssueSelector";
 
 export default async function Home({ searchParams }) {
   const params = await searchParams;
@@ -56,6 +59,10 @@ export default async function Home({ searchParams }) {
   const matchedTeam = team.find((team) => team.team_id === Number(teamId));
 
   const selectedTeam = matchedTeam ? matchedTeam : team[0];
+  const { data: issues } = await supabase
+    .from("issues")
+    .select("*")
+    .eq("team_id", selectedTeam?.team_id);
 
   //TODO: 다중 팀일 경우 선택된 팀
   return (
@@ -78,6 +85,9 @@ export default async function Home({ searchParams }) {
             <CalendarComponent team={selectedTeam} />
           </div>
           <div className={styles.mainRightContainer}>
+            <div className={styles.issueSelectorWrap}>
+              <IssueSelector issues={issues} />
+            </div>
             <GradientBar />
             <TeamMateComponent />
             <ChatComponent profile={profile} team={team} />
