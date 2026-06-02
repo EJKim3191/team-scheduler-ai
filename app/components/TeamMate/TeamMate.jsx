@@ -31,6 +31,12 @@ const TeamMateComponent = ({ teamMembers }) => {
 
       const data = await response.json();
 
+      if (!data.success) {
+        setParticipatingUsers([]);
+        setNonParticipatingUsers([]);
+        return;
+      }
+
       if (searchParams.get("issueId")) {
         data.response = data.response.filter(
           (schedule) =>

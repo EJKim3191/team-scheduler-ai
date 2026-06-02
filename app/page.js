@@ -56,6 +56,10 @@ export default async function Home({ searchParams }) {
       myTeams.map((team) => team.team_id),
     );
 
+  if (!teamId) {
+    redirect(`/?teamId=${team[0].team_id}`);
+  }
+
   const matchedTeam = team.find((team) => team.team_id === Number(teamId));
 
   const selectedTeam = matchedTeam ? matchedTeam : team[0];
