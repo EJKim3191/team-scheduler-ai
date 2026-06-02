@@ -1,0 +1,143 @@
+.root {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
+  min-width: 0;
+}
+
+.left {
+  min-width: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+.title {
+  font-size: 14px;
+  font-weight: 850;
+  letter-spacing: -0.02em;
+  color: #111827;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: 0.02em;
+  line-height: 1.1;
+  flex-shrink: 0;
+}
+
+.badgeOpen {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.badgeClosed {
+  background-color: #f3f4f6;
+  color: #4b5563;
+}
+
+.toggleButton {
+  flex-shrink: 0;
+  height: 34px;
+  padding: 0 12px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  background: #ffffff;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: background-color 140ms ease, transform 120ms ease;
+}
+
+.toggleClose {
+  border-color: rgba(220, 38, 38, 0.35);
+  background: #ef4444;
+}
+
+.toggleClose:hover {
+  background: #dc2626;
+}
+
+.toggleReopen {
+  border-color: rgba(22, 163, 74, 0.35);
+  background: #22c55e;
+}
+
+.toggleReopen:hover {
+  background: #16a34a;
+}
+
+.toggleButton:active {
+  transform: translateY(1px);
+}
+
+.toggleButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.toggleButton:focus-visible {
+  outline: 2px solid rgba(79, 70, 229, 0.35);
+  outline-offset: 2px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .root {
+    border-color: #374151;
+    background: #111827;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.32);
+  }
+
+  .title {
+    color: #f9fafb;
+  }
+
+  .toggleClose {
+    border-color: rgba(248, 113, 113, 0.55);
+    background: #ef4444;
+    color: #ffffff;
+  }
+
+  .toggleClose:hover {
+    background: #dc2626;
+  }
+
+  .toggleReopen {
+    border-color: rgba(74, 222, 128, 0.55);
+    background: #22c55e;
+    color: #052e16;
+  }
+
+  .toggleReopen:hover {
+    background: #16a34a;
+  }
+
+  .badgeOpen {
+    background-color: #14532d;
+    color: #bbf7d0;
+  }
+
+  .badgeClosed {
+    background-color: #374151;
+    color: #d1d5db;
+  }
+}
+

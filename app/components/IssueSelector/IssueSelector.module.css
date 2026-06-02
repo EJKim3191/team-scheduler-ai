@@ -152,6 +152,9 @@
 .listbox {
   --issue-list-item-height: 52px;
   --issue-list-visible-count: 5;
+  --issue-add-footer-height: 52px;
+  position: relative;
+  padding-bottom: calc(var(--issue-add-footer-height) + 10px);
 }
 
 .listPinned,
@@ -178,6 +181,7 @@
   overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-gutter: stable;
+  padding-bottom: calc(var(--issue-add-footer-height) - 100px);
 }
 
 .listScrollable::-webkit-scrollbar {
@@ -193,8 +197,10 @@
   background-color: transparent;
 }
 
-.addRow {
-  position: sticky;
+.addFooter {
+  position: absolute;
+  left: 0;
+  right: 0;
   bottom: 0;
   padding: 8px 6px 6px;
   background: linear-gradient(
@@ -346,7 +352,7 @@
     background-color: #4b5563;
   }
 
-  .addRow {
+  .addFooter {
     background: linear-gradient(
       180deg,
       rgba(17, 24, 39, 0) 0%,

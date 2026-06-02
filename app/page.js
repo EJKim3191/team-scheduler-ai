@@ -14,6 +14,7 @@ import Footer from "./components/Footer/Footer";
 import Profile from "./components/Profile/Profile";
 import TeamSelector from "./components/TeamSelector/TeamSelector";
 import IssueSelector from "./components/IssueSelector/IssueSelector";
+import IssueStatus from "./components/IssueStatus/IssueStatus";
 
 export default async function Home({ searchParams }) {
   const params = await searchParams;
@@ -103,6 +104,7 @@ export default async function Home({ searchParams }) {
             </div>
             <GradientBar />
             <TeamMateComponent teamMembers={teamMembers} />
+            <IssueStatus issues={issues} />
             <ChatComponent profile={profile} team={team} />
           </div>
         </div>

@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useId, useMemo, useRef, useState } from "react";
-import styles from "./IssueSelector.module.css";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { getCookie } from "@/utils/cookie";
+import styles from "./IssueSelector.module.css";
 import IssueCreator from "../IssueCreator/IssueCreator";
 
 /** @typedef {{ id: string | number, title: string, status?: string, team?: { team_name?: string } }} IssueOption */
@@ -210,6 +211,25 @@ function IssueSelector({
     setIsIssueCreatorOpen(true);
   };
 
+  const onAddIssueSubmit = async (issue) => {
+    const response = await fetch("/api/team/issues/create", {
+      method: "POST",
+      body: JSON.stringify({
+        access_token: getCookie("sb-access-token"),
+        refresh_token: getCookie("sb-refresh-token"),
+        teamId: searchParams.get("teamId"),
+        issue: issue,
+      }),
+    });
+    const data = await response.json();
+    if (data.success) {
+      alert("이슈가 추가되었습니다");
+      router.refresh();
+    } else {
+      alert(data.message);
+    }
+  };
+
   const isAllSelected = resolvedId === null;
 
   return (
@@ -312,35 +332,31 @@ function IssueSelector({
               );
             })}
 
-            <li role="presentation" className={styles.addRow}>
-              <button
-                type="button"
-                className={styles.addButton}
-                onClick={() => {
-                  onAddIssue();
-                }}
-              >
-                <span className={styles.addIcon} aria-hidden="true">
-                  <PlusIcon />
-                </span>
-                이슈 추가
-              </button>
-            </li>
-
             {!showAllOption && filteredIssues.length === 0 && (
               <li className={styles.emptyState} role="presentation">
                 검색 결과가 없습니다.
               </li>
             )}
           </ul>
+
+          <div className={styles.addFooter}>
+            <button
+              type="button"
+              className={styles.addButton}
+              onClick={onAddIssue}
+            >
+              <span className={styles.addIcon} aria-hidden="true">
+                <PlusIcon />
+              </span>
+              이슈 추가
+            </button>
+          </div>
         </div>
       </div>
       <IssueCreator
         open={isIssueCreatorOpen}
         onClose={() => setIsIssueCreatorOpen(false)}
-        onSubmit={() => {
-          onAddIssue();
-        }}
+        onSubmit={onAddIssueSubmit}
       />
     </div>
   );
