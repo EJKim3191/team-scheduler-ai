@@ -31,7 +31,7 @@ const TeamMateComponent = ({ teamMembers }) => {
 
       const data = await response.json();
 
-      if (!data.success) {
+      if (!data.response) {
         setParticipatingUsers([]);
         setNonParticipatingUsers([]);
         return;
