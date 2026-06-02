@@ -3,6 +3,7 @@
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import styles from "./IssueSelector.module.css";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import IssueCreator from "../IssueCreator/IssueCreator";
 
 /** @typedef {{ id: string | number, title: string, status?: string, team?: { team_name?: string } }} IssueOption */
 
@@ -67,6 +68,25 @@ function StatusBadge({ status }) {
   );
 }
 
+function PlusIcon() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M12 5v14M5 12h14"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
 /**
  * @param {{
  *   issues?: IssueOption[],
@@ -84,6 +104,7 @@ function IssueSelector({
   searchPlaceholder = "이슈 검색…",
 }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isIssueCreatorOpen, setIsIssueCreatorOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const containerRef = useRef(null);
   const searchInputRef = useRef(null);
@@ -183,6 +204,10 @@ function IssueSelector({
     currentParams.set("issueId", issueId);
     router.push(`${pathname}?${currentParams.toString()}`, { scroll: false });
     router.refresh();
+  };
+
+  const onAddIssue = () => {
+    setIsIssueCreatorOpen(true);
   };
 
   const isAllSelected = resolvedId === null;
@@ -287,6 +312,21 @@ function IssueSelector({
               );
             })}
 
+            <li role="presentation" className={styles.addRow}>
+              <button
+                type="button"
+                className={styles.addButton}
+                onClick={() => {
+                  onAddIssue();
+                }}
+              >
+                <span className={styles.addIcon} aria-hidden="true">
+                  <PlusIcon />
+                </span>
+                이슈 추가
+              </button>
+            </li>
+
             {!showAllOption && filteredIssues.length === 0 && (
               <li className={styles.emptyState} role="presentation">
                 검색 결과가 없습니다.
@@ -295,6 +335,13 @@ function IssueSelector({
           </ul>
         </div>
       </div>
+      <IssueCreator
+        open={isIssueCreatorOpen}
+        onClose={() => setIsIssueCreatorOpen(false)}
+        onSubmit={() => {
+          onAddIssue();
+        }}
+      />
     </div>
   );
 }

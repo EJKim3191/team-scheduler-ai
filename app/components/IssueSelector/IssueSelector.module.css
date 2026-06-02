@@ -193,6 +193,55 @@
   background-color: transparent;
 }
 
+.addRow {
+  position: sticky;
+  bottom: 0;
+  padding: 8px 6px 6px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0) 0%,
+    var(--issue-selector-surface) 42%,
+    var(--issue-selector-surface) 100%
+  );
+}
+
+.addButton {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--issue-selector-border);
+  border-radius: 10px;
+  background: var(--issue-selector-surface);
+  color: var(--issue-selector-text);
+  font-weight: 750;
+  cursor: pointer;
+  transition:
+    background-color 140ms ease,
+    border-color 140ms ease,
+    transform 120ms ease;
+}
+
+.addButton:hover {
+  background-color: var(--issue-selector-hover);
+}
+
+.addButton:active {
+  transform: translateY(1px);
+}
+
+.addButton:focus-visible {
+  outline: 2px solid var(--issue-selector-text);
+  outline-offset: 2px;
+}
+
+.addIcon {
+  display: inline-flex;
+  color: var(--issue-selector-accent);
+}
+
 .option {
   width: 100%;
   display: flex;
@@ -295,5 +344,14 @@
 
   .listScrollable::-webkit-scrollbar-thumb {
     background-color: #4b5563;
+  }
+
+  .addRow {
+    background: linear-gradient(
+      180deg,
+      rgba(17, 24, 39, 0) 0%,
+      var(--issue-selector-surface) 42%,
+      var(--issue-selector-surface) 100%
+    );
   }
 }
