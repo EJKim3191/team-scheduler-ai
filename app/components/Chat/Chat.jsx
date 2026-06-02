@@ -5,7 +5,7 @@ import React, { useState } from "react";
 import styles from "./Chat.module.css";
 import useCalander from "@/app/store/calander";
 import useUser from "@/app/store/user";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 
 function getCookie(name) {
   var value = document.cookie.match("(^|;) ?" + name + "=([^;]*)(;|$)");
@@ -13,6 +13,7 @@ function getCookie(name) {
 }
 
 const ChatComponent = ({ profile, team, issues }) => {
+  const router = useRouter();
   const params = useSearchParams();
 
   const [message, setMessage] = useState("");
@@ -72,7 +73,7 @@ const ChatComponent = ({ profile, team, issues }) => {
           start_time: item.start_time + "00+09",
         });
       });
-      await fetch("/api/calendar", {
+      const calendarResponse = await fetch("/api/calendar", {
         method: "POST",
         body: JSON.stringify({
           access_token: getCookie("sb-access-token"),
@@ -80,6 +81,12 @@ const ChatComponent = ({ profile, team, issues }) => {
           data: postData,
         }),
       });
+      const calendarData = await calendarResponse.json();
+      if (!calendarData.error) {
+        router.refresh();
+      } else {
+        alert("일정 추가 실패");
+      }
       fetchUserData();
     } else {
       alert("채팅 실패");
