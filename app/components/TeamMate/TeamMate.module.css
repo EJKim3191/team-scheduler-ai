@@ -4,11 +4,150 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
   font-size: clamp(12px, 1.8vw, 14px);
   line-height: 1.45;
-  color: #333;
+  color: #111827;
   word-break: keep-all;
   overflow-wrap: anywhere;
   flex-shrink: 0;
+}
+
+.header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 0;
+}
+
+.title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 650;
+}
+
+.metaItem {
+  white-space: nowrap;
+}
+
+.count {
+  color: #111827;
+}
+
+.metaDivider {
+  opacity: 0.8;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 10px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.section:first-of-type {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.badgeParticipating {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid rgba(22, 101, 52, 0.18);
+}
+
+.badgeNonParticipating {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid rgba(153, 27, 27, 0.18);
+}
+
+.chipList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  color: #111827;
+  font-size: 13px;
+  font-weight: 650;
+  white-space: normal; /* user_name 축약 없이 그대로 */
+}
+
+.empty {
+  margin: 0;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+@media (prefers-color-scheme: dark) {
+  .teamMateContainer {
+    border-color: #374151;
+    background: #111827;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.32);
+    color: #f9fafb;
+  }
+
+  .meta {
+    color: #9ca3af;
+  }
+
+  .count {
+    color: #f9fafb;
+  }
+
+  .section {
+    border-top-color: rgba(148, 163, 184, 0.18);
+  }
+
+  .chip {
+    border-color: #374151;
+    background: #0f172a;
+    color: #f9fafb;
+  }
+
+  .empty {
+    color: #9ca3af;
+  }
 }

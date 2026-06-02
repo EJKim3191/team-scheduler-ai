@@ -22,17 +22,27 @@ const TeamMateComponent = ({ teamMembers }) => {
           team_id: searchParams.get("teamId"),
         }),
       });
+
       const data = await response.json();
+
       if (searchParams.get("issueId")) {
         data.response = data.response.filter(
           (schedule) =>
             Number(schedule.issue_id) === Number(searchParams.get("issueId")),
         );
       }
+
+      if (!data.response || data.response.length === 0) {
+        setParticipatingUsers([]);
+        setNonParticipatingUsers([]);
+        return;
+      }
+
       const profileMap = new Map();
       data.response.forEach((item) => {
         profileMap.set(item.profile_id, item.profiles.user_name);
       });
+
       const participatingUsers = Array.from(
         profileMap,
         ([profile_id, user_name]) => ({
@@ -55,15 +65,62 @@ const TeamMateComponent = ({ teamMembers }) => {
   }, [teamMembers]);
 
   return (
-    <div className={styles.teamMateContainer}>
-      <div>
-        참여자: {participatingUsers.map((user) => user.user_name).join(", ")}
+    <section className={styles.teamMateContainer} aria-label="참여 현황">
+      <header className={styles.header}>
+        <h2 className={styles.title}>참여 현황</h2>
+        <div className={styles.meta}>
+          <span className={styles.metaItem}>
+            참여{" "}
+            <span className={styles.count}>{participatingUsers.length}</span>
+          </span>
+          <span className={styles.metaDivider} aria-hidden="true">
+            ·
+          </span>
+          <span className={styles.metaItem}>
+            미참여{" "}
+            <span className={styles.count}>{nonParticipatingUsers.length}</span>
+          </span>
+        </div>
+      </header>
+
+      <div className={styles.section}>
+        <div className={styles.sectionHeader}>
+          <span className={`${styles.badge} ${styles.badgeParticipating}`}>
+            참여자
+          </span>
+        </div>
+        {participatingUsers.length === 0 ? (
+          <p className={styles.empty}>참여자가 없습니다.</p>
+        ) : (
+          <div className={styles.chipList}>
+            {participatingUsers.map((user) => (
+              <span key={user.profile_id} className={styles.chip}>
+                {user.user_name}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
-      <div>
-        미참여자:{" "}
-        {nonParticipatingUsers.map((user) => user.user_name).join(", ")}
+
+      <div className={styles.section}>
+        <div className={styles.sectionHeader}>
+          <span className={`${styles.badge} ${styles.badgeNonParticipating}`}>
+            미참여자
+          </span>
+        </div>
+        {nonParticipatingUsers.length === 0 ? (
+          <p className={styles.empty}>미참여자가 없습니다.</p>
+        ) : (
+          <div className={styles.chipList}>
+            {nonParticipatingUsers.map((user) => (
+              <span key={user.profile_id} className={styles.chip}>
+                {user.user_name}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
-    </div>
+    </section>
   );
 };
 
