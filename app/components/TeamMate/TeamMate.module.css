@@ -16,6 +16,12 @@
   word-break: keep-all;
   overflow-wrap: anywhere;
   flex-shrink: 0;
+  cursor: pointer;
+}
+
+.teamMateContainer:focus-visible {
+  outline: 2px solid #111827;
+  outline-offset: 2px;
 }
 
 .header {
@@ -55,17 +61,24 @@
   opacity: 0.8;
 }
 
+.chevron {
+  flex-shrink: 0;
+  margin-left: auto;
+  color: #9ca3af;
+  font-size: 13px;
+  line-height: 1;
+}
+
 .section {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding-top: 10px;
-  border-top: 1px solid #f1f5f9;
 }
 
-.section:first-of-type {
-  border-top: 0;
-  padding-top: 0;
+.divider {
+  height: 1px;
+  background: #f1f5f9;
+  margin: 10px 0 10px;
 }
 
 .sectionHeader {
@@ -107,9 +120,9 @@
   align-items: center;
   padding: 6px 10px;
   border-radius: 999px;
-  border: 1px solid #e5e7eb;
-  background: #f9fafb;
-  color: #111827;
+  border: 0;
+  background: #4b5563;
+  color: #ffffff;
   font-size: 13px;
   font-weight: 650;
   white-space: normal; /* user_name 축약 없이 그대로 */
@@ -121,12 +134,30 @@
   color: #6b7280;
 }
 
+.overlay {
+  pointer-events: auto;
+}
+
+.overlayPanel {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.18);
+}
+
 @media (prefers-color-scheme: dark) {
   .teamMateContainer {
     border-color: #374151;
     background: #111827;
     box-shadow: 0 10px 24px rgba(0, 0, 0, 0.32);
     color: #f9fafb;
+  }
+
+  .teamMateContainer:focus-visible {
+    outline-color: #f9fafb;
   }
 
   .meta {
@@ -137,8 +168,12 @@
     color: #f9fafb;
   }
 
-  .section {
-    border-top-color: rgba(148, 163, 184, 0.18);
+  .chevron {
+    color: #9ca3af;
+  }
+
+  .divider {
+    background: rgba(148, 163, 184, 0.18);
   }
 
   .chip {
@@ -149,5 +184,11 @@
 
   .empty {
     color: #9ca3af;
+  }
+
+  .overlayPanel {
+    border-color: #374151;
+    background: #111827;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
   }
 }

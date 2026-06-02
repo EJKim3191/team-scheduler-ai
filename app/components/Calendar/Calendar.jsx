@@ -13,32 +13,11 @@ import useCalander from "@/app/store/calander";
 import useUser from "@/app/store/user";
 import { getCookie } from "@/utils/cookie";
 import { useSearchParams } from "next/navigation";
+import { getColorForUser } from "@/utils/userColor";
 
 const HOURS = Array.from({ length: 24 }, (_, i) => i); // 0 ~ 23시
 
-// 유저 이름을 항상 동일한 색상에 매핑하기 위한 헬퍼
-const USER_COLORS = [
-  "#6366F1", // indigo
-  "#EC4899", // pink
-  "#F97316", // orange
-  "#22C55E", // green
-  "#06B6D4", // cyan
-  "#A855F7", // purple
-  "#F59E0B", // amber
-  "#0EA5E9", // sky
-];
-
 const TIME_BACKGROUND_COLOR = ["", "	#F5DEB3", "#f6c1a3", "#C4E1A6"];
-
-const getColorForUser = (name = "") => {
-  if (!name) return USER_COLORS[0];
-  let hash = 0;
-  for (let i = 0; i < name.length; i++) {
-    hash = (hash * 31 + name.charCodeAt(i)) >>> 0;
-  }
-  const index = hash % USER_COLORS.length;
-  return USER_COLORS[index];
-};
 
 const getBackgroundColor = (cellKey) => {
   return;
@@ -103,7 +82,10 @@ const CalendarComponent = ({ team }) => {
       if (isTimeInRange(cellKey, schedule.start_time)) {
         const userName = schedule.profiles.user_name || "";
         const initial = (userName && userName[0]) || "?";
-        const backgroundColor = getColorForUser(userName);
+        const backgroundColor = getColorForUser({
+          profileId: schedule.profile_id,
+          userName,
+        });
         matchedUsers.push({
           id: schedule.profile_id,
           key: `${userName}-${schedule.start_time}-${cellKey}`,
