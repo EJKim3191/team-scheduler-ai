@@ -105,7 +105,7 @@ export default async function Home({ searchParams }) {
             <GradientBar />
             <TeamMateComponent teamMembers={teamMembers} />
             <IssueStatus issues={issues} />
-            <ChatComponent profile={profile} team={team} />
+            <ChatComponent profile={profile[0]} team={team} issues={issues} />
           </div>
         </div>
       </main>

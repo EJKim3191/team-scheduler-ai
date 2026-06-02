@@ -5,18 +5,26 @@ import React, { useState } from "react";
 import styles from "./Chat.module.css";
 import useCalander from "@/app/store/calander";
 import useUser from "@/app/store/user";
-import useTeam from "@/app/store/team";
+import { useSearchParams } from "next/navigation";
 
 function getCookie(name) {
   var value = document.cookie.match("(^|;) ?" + name + "=([^;]*)(;|$)");
   return value ? unescape(value[2]) : null;
 }
 
-const ChatComponent = ({ profile, team }) => {
+const ChatComponent = ({ profile, team, issues }) => {
+  const params = useSearchParams();
+
   const [message, setMessage] = useState("");
   const selectedIds = useCalander((state) => state.selectedIds);
   const setUserData = useUser((state) => state.setUsers);
   const clearSelectedIds = useCalander((state) => state.clearSelectedIds);
+
+  const selectedIssue = issues.find(
+    (issue) => issue.id === Number(params.get("issueId")),
+  );
+
+  const selectedTeamId = params.get("teamId");
 
   const fetchUserData = async () => {
     const response = await fetch("/api/calendar/user", {
@@ -36,6 +44,17 @@ const ChatComponent = ({ profile, team }) => {
       alert("메시지를 입력해주세요");
       return;
     }
+
+    if (!params.get("issueId") || !selectedIssue) {
+      alert("이슈를 선택해주세요");
+      return;
+    }
+
+    if (selectedIssue.status === "closed") {
+      alert("이슈가 완료되었습니다. 완료된 이슈는 채팅할 수 없습니다.");
+      return;
+    }
+
     const response = await fetch("/api/chat", {
       method: "POST",
       body: JSON.stringify({ userName: profile.user_name, message: message }),
@@ -47,8 +66,9 @@ const ChatComponent = ({ profile, team }) => {
 
       res.data.data.forEach((item) => {
         postData.push({
-          team_id: team[0].team_id,
-          profile_id: profile[0].id,
+          team_id: Number(selectedTeamId),
+          profile_id: profile.id,
+          issue_id: selectedIssue.id,
           start_time: item.start_time + "00+09",
         });
       });
