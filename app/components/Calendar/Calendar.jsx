@@ -42,9 +42,18 @@ const CalendarComponent = ({ team }) => {
 
   const searchParams = useSearchParams();
   const issueId = searchParams.get("issueId");
+  const teamId = searchParams.get("teamId");
+
+  useEffect(() => {
+    if (!issueId || !teamId) {
+      setUserData([]);
+    }
+  }, [issueId, teamId]);
 
   useEffect(() => {
     const fetchUserData = async () => {
+      if (!issueId || !teamId) return;
+
       const response = await fetch("/api/calendar/user", {
         method: "POST",
         body: JSON.stringify({
@@ -54,11 +63,11 @@ const CalendarComponent = ({ team }) => {
         }),
       });
       const data = await response.json();
-      if (issueId) {
-        data.response = data.response.filter(
-          (schedule) => Number(schedule.issue_id) === Number(issueId),
-        );
-      }
+
+      data.response = data.response.filter(
+        (schedule) => Number(schedule.issue_id) === Number(issueId),
+      );
+
       setUserData(data.response);
     };
     fetchUserData();

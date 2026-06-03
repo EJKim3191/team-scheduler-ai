@@ -10,6 +10,8 @@ import { getColorForUser } from "@/utils/userColor";
 
 const TeamMateComponent = ({ teamMembers }) => {
   const searchParams = useSearchParams();
+  const issueId = searchParams.get("issueId");
+  const teamId = searchParams.get("teamId");
 
   const [participatingUsers, setParticipatingUsers] = useState([]);
   const [nonParticipatingUsers, setNonParticipatingUsers] = useState([]);
@@ -19,13 +21,21 @@ const TeamMateComponent = ({ teamMembers }) => {
   const [overlayStyle, setOverlayStyle] = useState(null);
 
   useEffect(() => {
+    if (!issueId || !teamId) {
+      setParticipatingUsers([]);
+      setNonParticipatingUsers([]);
+    }
+  }, [issueId, teamId]);
+
+  useEffect(() => {
+    if (!issueId || !teamId) return;
     const fetchTeamSchedules = async () => {
       const response = await fetch("/api/calendar/user", {
         method: "POST",
         body: JSON.stringify({
           access_token: getCookie("sb-access-token"),
           refresh_token: getCookie("sb-refresh-token"),
-          team_id: searchParams.get("teamId"),
+          team_id: teamId,
         }),
       });
 
@@ -37,12 +47,9 @@ const TeamMateComponent = ({ teamMembers }) => {
         return;
       }
 
-      if (searchParams.get("issueId")) {
-        data.response = data.response.filter(
-          (schedule) =>
-            Number(schedule.issue_id) === Number(searchParams.get("issueId")),
-        );
-      }
+      data.response = data.response.filter(
+        (schedule) => Number(schedule.issue_id) === Number(issueId),
+      );
 
       const profileMap = new Map();
       data.response.forEach((item) => {
@@ -68,7 +75,7 @@ const TeamMateComponent = ({ teamMembers }) => {
       setNonParticipatingUsers(nonParticipatingUsers);
     };
     fetchTeamSchedules();
-  }, [teamMembers]);
+  }, [teamMembers, issueId, teamId]);
 
   const updateOverlayPosition = () => {
     const el = containerRef.current;

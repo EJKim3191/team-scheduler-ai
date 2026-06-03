@@ -8,7 +8,7 @@ import IssueCreator from "../IssueCreator/IssueCreator";
 
 /** @typedef {{ id: string | number, title: string, status?: string, team?: { team_name?: string } }} IssueOption */
 
-const ALL_OPTION = { id: null, title: "전체" };
+// const ALL_OPTION = { id: null, title: "전체" };
 
 function ChevronIcon({ open }) {
   return (
@@ -114,19 +114,18 @@ function IssueSelector({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-
   const resolvedId =
     selectedIssueId === undefined || searchParams.get("issueId") === ""
       ? null
-      : searchParams.get("issueId");
+      : Number(searchParams.get("issueId"));
 
   const selectedIssue =
     resolvedId === null
-      ? ALL_OPTION
+      ? issues[0]
       : (issues.find((issue) => String(issue.id) === String(resolvedId)) ??
-        ALL_OPTION);
+        null);
 
-  const displayValue = selectedIssue.title;
+  const displayValue = selectedIssue?.title ?? "이슈 선택";
 
   const filteredIssues = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
@@ -139,11 +138,11 @@ function IssueSelector({
     });
   }, [issues, searchQuery]);
 
-  const showAllOption = useMemo(() => {
-    const query = searchQuery.trim().toLowerCase();
-    if (!query) return true;
-    return "전체".includes(query);
-  }, [searchQuery]);
+  // const showAllOption = useMemo(() => {
+  //   const query = searchQuery.trim().toLowerCase();
+  //   if (!query) return true;
+  //   return "전체".includes(query);
+  // }, [searchQuery]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -279,25 +278,6 @@ function IssueSelector({
           aria-label={`${label} 목록`}
           className={styles.listbox}
         >
-          {showAllOption && (
-            <ul className={styles.listPinned}>
-              <li role="presentation">
-                <button
-                  type="button"
-                  role="option"
-                  aria-selected={isAllSelected}
-                  className={`${styles.option} ${
-                    isAllSelected ? styles.optionSelected : ""
-                  }`}
-                  onClick={() => handleSelect(null)}
-                >
-                  <span className={styles.optionTitle}>전체</span>
-                  <span className={styles.optionMeta}>모든 이슈 보기</span>
-                </button>
-              </li>
-            </ul>
-          )}
-
           <ul
             className={`${styles.list} ${
               issues.length > 5 ? styles.listScrollable : ""
@@ -332,7 +312,7 @@ function IssueSelector({
               );
             })}
 
-            {!showAllOption && filteredIssues.length === 0 && (
+            {filteredIssues.length === 0 && (
               <li className={styles.emptyState} role="presentation">
                 검색 결과가 없습니다.
               </li>
