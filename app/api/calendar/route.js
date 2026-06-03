@@ -31,10 +31,9 @@ async function addUserData(access_token, refresh_token, scheduleData) {
 
   const { data, error } = await supabase
     .from("user_schedules")
-    // .insert(scheduleData);
     .upsert(scheduleData, {
-      onConflict: "profile_id, start_time", // 이 두 값이 겹치면
-      ignoreDuplicates: true, // 새로운 PK 생성 없이 무시함
+      onConflict: "profile_id, start_time, issue_id",
+      ignoreDuplicates: true,
     });
 
   return { data, error };

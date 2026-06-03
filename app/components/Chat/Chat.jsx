@@ -6,6 +6,7 @@ import styles from "./Chat.module.css";
 import useCalander from "@/app/store/calander";
 import useUser from "@/app/store/user";
 import { useSearchParams, useRouter } from "next/navigation";
+import ChatScenarioModal from "./ChatScenarioModal";
 
 function getCookie(name) {
   var value = document.cookie.match("(^|;) ?" + name + "=([^;]*)(;|$)");
@@ -17,6 +18,10 @@ const ChatComponent = ({ profile, team, issues }) => {
   const params = useSearchParams();
 
   const [message, setMessage] = useState("");
+  const [scenarios, setScenarios] = useState([]);
+  const [selectedScenarioIndex, setSelectedScenarioIndex] = useState(0);
+  const [isScenarioModalOpen, setIsScenarioModalOpen] = useState(false);
+  const [isSubmittingScenario, setIsSubmittingScenario] = useState(false);
   const selectedIds = useCalander((state) => state.selectedIds);
   const setUserData = useUser((state) => state.setUsers);
   const clearSelectedIds = useCalander((state) => state.clearSelectedIds);
@@ -40,6 +45,36 @@ const ChatComponent = ({ profile, team, issues }) => {
     setUserData(data.response);
   };
 
+  const buildPostData = (scenario) =>
+    scenario.data.map((item) => ({
+      team_id: Number(selectedTeamId),
+      profile_id: profile.id,
+      issue_id: selectedIssue.id,
+      start_time: item.start_time + "00+09",
+    }));
+
+  const submitSchedule = async (scenario) => {
+    const postData = buildPostData(scenario);
+
+    const calendarResponse = await fetch("/api/calendar", {
+      method: "POST",
+      body: JSON.stringify({
+        access_token: getCookie("sb-access-token"),
+        refresh_token: getCookie("sb-refresh-token"),
+        data: postData,
+      }),
+    });
+    const calendarData = await calendarResponse.json();
+
+    if (!calendarData.error) {
+      router.refresh();
+      fetchUserData();
+      return true;
+    }
+    alert("일정 추가 실패");
+    return false;
+  };
+
   const handleSend = async () => {
     if (message.trim() === "") {
       alert("메시지를 입력해주세요");
@@ -60,37 +95,48 @@ const ChatComponent = ({ profile, team, issues }) => {
       method: "POST",
       body: JSON.stringify({ userName: profile.user_name, message: message }),
     });
-    let res = await response.json();
+    const res = await response.json();
 
-    if (res.success) {
-      const postData = [];
-
-      res.data.data.forEach((item) => {
-        postData.push({
-          team_id: Number(selectedTeamId),
-          profile_id: profile.id,
-          issue_id: selectedIssue.id,
-          start_time: item.start_time + "00+09",
-        });
-      });
-      const calendarResponse = await fetch("/api/calendar", {
-        method: "POST",
-        body: JSON.stringify({
-          access_token: getCookie("sb-access-token"),
-          refresh_token: getCookie("sb-refresh-token"),
-          data: postData,
-        }),
-      });
-      const calendarData = await calendarResponse.json();
-      if (!calendarData.error) {
-        router.refresh();
-      } else {
-        alert("일정 추가 실패");
-      }
-      fetchUserData();
-    } else {
+    if (!res.success) {
       alert("채팅 실패");
+      return;
     }
+
+    if (!res.data.scenarios || res.data.scenarios.length === 0) {
+      alert("일정 추가 실패");
+      return;
+    }
+
+    if (res.data.scenarios.length > 1) {
+      setScenarios(res.data.scenarios);
+      setSelectedScenarioIndex(0);
+      setIsScenarioModalOpen(true);
+      return;
+    }
+
+    await submitSchedule(res.data.scenarios[0]);
+  };
+
+  const handleScenarioConfirm = async () => {
+    const scenario = scenarios[selectedScenarioIndex];
+    if (!scenario) return;
+
+    setIsSubmittingScenario(true);
+    try {
+      const success = await submitSchedule(scenario);
+      if (success) {
+        setIsScenarioModalOpen(false);
+        setScenarios([]);
+      }
+    } finally {
+      setIsSubmittingScenario(false);
+    }
+  };
+
+  const handleScenarioClose = () => {
+    if (isSubmittingScenario) return;
+    setIsScenarioModalOpen(false);
+    setScenarios([]);
   };
 
   const handleDelete = async () => {
@@ -140,6 +186,15 @@ const ChatComponent = ({ profile, team, issues }) => {
       >
         삭제
       </button>
+      <ChatScenarioModal
+        open={isScenarioModalOpen}
+        scenarios={scenarios}
+        selectedIndex={selectedScenarioIndex}
+        onSelect={setSelectedScenarioIndex}
+        onConfirm={handleScenarioConfirm}
+        onClose={handleScenarioClose}
+        loading={isSubmittingScenario}
+      />
     </div>
   );
 };

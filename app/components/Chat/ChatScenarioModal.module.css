@@ -1,0 +1,205 @@
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+
+.modalBackdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  padding: 0;
+  background: rgba(15, 23, 42, 0.45);
+  cursor: pointer;
+}
+
+.modalPanel {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 440px);
+  padding: 20px;
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.18);
+}
+
+.modalTitle {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #111827;
+}
+
+.modalDescription {
+  margin: 12px 0 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: #4b5563;
+}
+
+.optionList {
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: min(50vh, 320px);
+  overflow-y: auto;
+}
+
+.option {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #111827;
+  cursor: pointer;
+  text-align: left;
+  transition:
+    background-color 140ms ease,
+    border-color 140ms ease;
+}
+
+.option:hover {
+  background: #f9fafb;
+}
+
+.optionSelected {
+  border-color: rgba(79, 70, 229, 0.55);
+  background: #eff6ff;
+}
+
+.optionText {
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 650;
+  line-height: 1.45;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+.checkIcon {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  color: transparent;
+  background: transparent;
+  transition:
+    color 140ms ease,
+    background-color 140ms ease;
+}
+
+.checkIconVisible {
+  color: #ffffff;
+  background: #4f46e5;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.modalCancelButton,
+.modalConfirmButton {
+  padding: 9px 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.modalCancelButton {
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  color: #374151;
+}
+
+.modalCancelButton:hover {
+  background: #f9fafb;
+}
+
+.modalConfirmButton {
+  border: 1px solid rgba(79, 70, 229, 0.65);
+  background: #4f46e5;
+  color: #ffffff;
+}
+
+.modalConfirmButton:hover {
+  background: #4338ca;
+}
+
+.modalCancelButton:disabled,
+.modalConfirmButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.modalCancelButton:focus-visible,
+.modalConfirmButton:focus-visible {
+  outline: 2px solid rgba(79, 70, 229, 0.35);
+  outline-offset: 2px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .modalBackdrop {
+    background: rgba(0, 0, 0, 0.6);
+  }
+
+  .modalPanel {
+    border-color: #374151;
+    background: #111827;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
+  }
+
+  .modalTitle {
+    color: #f9fafb;
+  }
+
+  .modalDescription {
+    color: #9ca3af;
+  }
+
+  .option {
+    border-color: #374151;
+    background: #0f172a;
+    color: #f9fafb;
+  }
+
+  .option:hover {
+    background: #111c33;
+  }
+
+  .optionSelected {
+    border-color: rgba(147, 197, 253, 0.55);
+    background: #1e3a5f;
+  }
+
+  .modalCancelButton {
+    border-color: #374151;
+    background: #0f172a;
+    color: #e5e7eb;
+  }
+
+  .modalCancelButton:hover {
+    background: #111c33;
+  }
+}
