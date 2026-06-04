@@ -38,6 +38,11 @@
   border-width: 4px;
 }
 
+.light {
+  border-color: rgba(255, 255, 255, 0.35);
+  border-top-color: #ffffff;
+}
+
 .label {
   margin: 0;
   font-size: 13px;

@@ -4,6 +4,7 @@ export default function LoadingWheel({
   label,
   size = "md",
   centered = false,
+  light = false,
   className = "",
 }) {
   const sizeClass = styles[size] ?? styles.md;
@@ -15,7 +16,10 @@ export default function LoadingWheel({
       aria-live="polite"
       aria-label={label || "로딩 중"}
     >
-      <div className={`${styles.wheel} ${sizeClass}`} aria-hidden="true" />
+      <div
+        className={`${styles.wheel} ${sizeClass} ${light ? styles.light : ""}`}
+        aria-hidden="true"
+      />
       {label ? <p className={styles.label}>{label}</p> : null}
     </div>
   );
