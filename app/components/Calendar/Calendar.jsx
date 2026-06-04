@@ -2,15 +2,11 @@
 // TODO: decompose this component
 "use client";
 
-import React, { useState, useMemo, useEffect, useRef } from "react";
-import Calendar from "react-calendar";
-import { createClient } from "@/lib/supabase/server";
+import React, { useState, useMemo, useEffect } from "react";
 import { isTimeInRange } from "@/utils/timeStamp";
-import { Suspense } from "react";
 import "react-calendar/dist/Calendar.css";
 import styles from "./Calendar.module.css";
 import useCalander from "@/app/store/calander";
-import useUser from "@/app/store/user";
 import { getCookie } from "@/utils/cookie";
 import { useSearchParams } from "next/navigation";
 import { getColorForUser } from "@/utils/userColor";
@@ -19,9 +15,6 @@ const HOURS = Array.from({ length: 24 }, (_, i) => i); // 0 ~ 23시
 
 const TIME_BACKGROUND_COLOR = ["", "	#F5DEB3", "#f6c1a3", "#C4E1A6"];
 
-const getBackgroundColor = (cellKey) => {
-  return;
-};
 const getStartOfWeek = (date) => {
   const d = new Date(date);
   const day = d.getDay(); // 0 (일) ~ 6 (토)
@@ -31,18 +24,18 @@ const getStartOfWeek = (date) => {
   return d;
 };
 
-const CalendarComponent = ({ team }) => {
-  const selectedDate = useCalander((state) => state.selectedDate);
+const CalendarComponent = ({ profile, team }) => {
+  const searchParams = useSearchParams();
+  const issueId = searchParams.get("issueId");
+  const teamId = searchParams.get("teamId");
+
   const [expandedCellKey, setExpandedCellKey] = useState(null);
   const [hoveredCellKey, setHoveredCellKey] = useState(null);
   const [userData, setUserData] = useState([]);
 
-  const selectedIds = useCalander((state) => state.selectedIds);
-  const updateSelectedIds = useCalander((state) => state.updateSelectedIds);
-
-  const searchParams = useSearchParams();
-  const issueId = searchParams.get("issueId");
-  const teamId = searchParams.get("teamId");
+  const selectedDate = useCalander((state) => state.selectedDate);
+  const selectedSchedule = useCalander((state) => state.selectedSchedule);
+  const setSelectedSchedule = useCalander((state) => state.setSelectedSchedule);
 
   useEffect(() => {
     if (!issueId || !teamId) {
@@ -98,6 +91,7 @@ const CalendarComponent = ({ team }) => {
         matchedUsers.push({
           id: schedule.profile_id,
           key: `${userName}-${schedule.start_time}-${cellKey}`,
+          scheduleId: schedule.schedule_id,
           initial: initial.toUpperCase(),
           backgroundColor,
         });
@@ -161,14 +155,20 @@ const CalendarComponent = ({ team }) => {
             <div
               key={member.key}
               className={
-                selectedIds.includes(member.id)
+                selectedSchedule.includes(member.scheduleId)
                   ? styles.userEmojiSelected
                   : styles.userEmoji
               }
               style={{
                 backgroundColor: member.backgroundColor,
               }}
-              onClick={() => updateSelectedIds(member.id)}
+              onClick={() => {
+                if (profile.id !== member.id) {
+                  return;
+                }
+                setSelectedSchedule(member.scheduleId);
+                // updateSelectedIds(member.id);
+              }}
             >
               {member.initial}
             </div>
@@ -184,69 +184,85 @@ const CalendarComponent = ({ team }) => {
   };
 
   return (
-    <div className={styles.calendarRoot}>
-      <div className={styles.gridWrap}>
-        <table className={styles.scheduleTable}>
-          <thead>
-            <tr>
-              <th
-                className={styles.timeCol}
-                style={{
-                  border: "1px solid #ddd",
-                  padding: "4px clamp(2px, 1vw, 8px)",
-                  backgroundColor: "#f9fafb",
-                  fontSize: "clamp(10px, 2vw, 12px)",
-                }}
-              >
-                시간
-              </th>
-              {weekDays.map((day) => (
-                <th
-                  key={day.toDateString()}
-                  className={styles.dayHead}
-                  style={{
-                    border: "1px solid #ddd",
-                    padding: "4px clamp(2px, 1vw, 8px)",
-                    backgroundColor: "#f9fafb",
-                    textAlign: "center",
-                    fontSize: "clamp(10px, 2vw, 12px)",
-                  }}
-                >
-                  {day.toLocaleDateString("ko-KR", {
-                    weekday: "short",
-                    month: "numeric",
-                    day: "numeric",
-                  })}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {HOURS.map((hour) => (
-              <tr key={hour}>
-                <td
-                  className={styles.timeCol}
-                  style={{
-                    border: "1px solid #eee",
-                    padding: "4px clamp(2px, 1vw, 8px)",
-                    fontSize: "clamp(10px, 2vw, 12px)",
-                    backgroundColor: "#fafafa",
-                    textAlign: "right",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  {hour.toString().padStart(2, "0")}:00
-                </td>
-                {weekDays.map((day) => {
-                  const cellKey = `${day.toDateString()}-${hour}`;
-                  return getUserData(cellKey);
-                })}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
+    <>
+      {!issueId ? (
+        <div className={styles.calendarRoot}>
+          <div className={`${styles.gridWrap} ${styles.emptyWrap}`}>
+            <div className={styles.emptyState} role="status">
+              <p className={styles.emptyTitle}>이슈를 선택해주세요</p>
+              <p className={styles.emptyDescription}>
+                우측 상단 이슈 선택에서 이슈를 고르면 팀 일정을 확인할 수
+                있습니다.
+              </p>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className={styles.calendarRoot}>
+          <div className={styles.gridWrap}>
+            <table className={styles.scheduleTable}>
+              <thead>
+                <tr>
+                  <th
+                    className={styles.timeCol}
+                    style={{
+                      border: "1px solid #ddd",
+                      padding: "4px clamp(2px, 1vw, 8px)",
+                      backgroundColor: "#f9fafb",
+                      fontSize: "clamp(10px, 2vw, 12px)",
+                    }}
+                  >
+                    시간
+                  </th>
+                  {weekDays.map((day) => (
+                    <th
+                      key={day.toDateString()}
+                      className={styles.dayHead}
+                      style={{
+                        border: "1px solid #ddd",
+                        padding: "4px clamp(2px, 1vw, 8px)",
+                        backgroundColor: "#f9fafb",
+                        textAlign: "center",
+                        fontSize: "clamp(10px, 2vw, 12px)",
+                      }}
+                    >
+                      {day.toLocaleDateString("ko-KR", {
+                        weekday: "short",
+                        month: "numeric",
+                        day: "numeric",
+                      })}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {HOURS.map((hour) => (
+                  <tr key={hour}>
+                    <td
+                      className={styles.timeCol}
+                      style={{
+                        border: "1px solid #eee",
+                        padding: "4px clamp(2px, 1vw, 8px)",
+                        fontSize: "clamp(10px, 2vw, 12px)",
+                        backgroundColor: "#fafafa",
+                        textAlign: "right",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {hour.toString().padStart(2, "0")}:00
+                    </td>
+                    {weekDays.map((day) => {
+                      const cellKey = `${day.toDateString()}-${hour}`;
+                      return getUserData(cellKey);
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 

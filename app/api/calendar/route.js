@@ -1,12 +1,12 @@
 import { createClient } from "@/lib/supabase/server";
 const { NextResponse } = require("next/server");
 
-async function deleteUserDataById(ids) {
+async function deleteUserDataByScheduleIds(scheduleIds) {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("user_schedules")
     .delete()
-    .in("id", ids); // 삭제할 행의 ID 지정
+    .in("schedule_id", scheduleIds); // 삭제할 행의 ID 지정
 
   if (error) {
     console.error("삭제 중 오류 발생:", error.message);
@@ -47,8 +47,8 @@ async function POST(req) {
 }
 
 async function DELETE(req) {
-  const { selectedIds } = await req.json();
-  const response = await deleteUserDataById(selectedIds);
+  const { selectedSchedule } = await req.json();
+  const response = await deleteUserDataByScheduleIds(selectedSchedule);
 
   return NextResponse.json({ response });
 }

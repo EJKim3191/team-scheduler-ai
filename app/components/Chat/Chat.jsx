@@ -7,6 +7,7 @@ import useCalander from "@/app/store/calander";
 import useUser from "@/app/store/user";
 import { useSearchParams, useRouter } from "next/navigation";
 import ChatScenarioModal from "./ChatScenarioModal";
+import ChatDeleteConfirmModal from "./ChatDeleteConfirmModal";
 
 function getCookie(name) {
   var value = document.cookie.match("(^|;) ?" + name + "=([^;]*)(;|$)");
@@ -22,9 +23,13 @@ const ChatComponent = ({ profile, team, issues }) => {
   const [selectedScenarioIndex, setSelectedScenarioIndex] = useState(0);
   const [isScenarioModalOpen, setIsScenarioModalOpen] = useState(false);
   const [isSubmittingScenario, setIsSubmittingScenario] = useState(false);
-  const selectedIds = useCalander((state) => state.selectedIds);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const selectedSchedule = useCalander((state) => state.selectedSchedule);
+  const clearSelectedSchedule = useCalander(
+    (state) => state.clearSelectedSchedule,
+  );
   const setUserData = useUser((state) => state.setUsers);
-  const clearSelectedIds = useCalander((state) => state.clearSelectedIds);
 
   const selectedIssue = issues.find(
     (issue) => issue.id === Number(params.get("issueId")),
@@ -139,23 +144,40 @@ const ChatComponent = ({ profile, team, issues }) => {
     setScenarios([]);
   };
 
-  const handleDelete = async () => {
-    const response = await fetch("/api/calendar", {
-      method: "DELETE",
-      body: JSON.stringify({
-        selectedIds,
-        access_token: getCookie("sb-access-token"),
-        refresh_token: getCookie("sb-refresh-token"),
-      }),
-    });
+  const handleDeleteClick = () => {
+    if (selectedSchedule.length === 0) return;
+    setIsDeleteModalOpen(true);
+  };
 
-    if (response.ok) {
-      alert("삭제되었습니다");
-      clearSelectedIds();
-    } else {
-      alert("삭제 실패");
+  const handleDeleteClose = () => {
+    if (isDeleting) return;
+    setIsDeleteModalOpen(false);
+  };
+
+  const handleDeleteConfirm = async () => {
+    setIsDeleting(true);
+    try {
+      const response = await fetch("/api/calendar", {
+        method: "DELETE",
+        body: JSON.stringify({
+          selectedSchedule: selectedSchedule,
+          access_token: getCookie("sb-access-token"),
+          refresh_token: getCookie("sb-refresh-token"),
+        }),
+      });
+
+      if (response.ok) {
+        alert("삭제되었습니다");
+        clearSelectedSchedule();
+        setIsDeleteModalOpen(false);
+        router.refresh();
+        fetchUserData();
+      } else {
+        alert("삭제 실패");
+      }
+    } finally {
+      setIsDeleting(false);
     }
-    fetchUserData();
   };
 
   return (
@@ -176,16 +198,23 @@ const ChatComponent = ({ profile, team, issues }) => {
         전송
       </button>
       <button
-        disabled={selectedIds.length === 0}
+        disabled={selectedSchedule.length === 0}
         className={
-          selectedIds.length === 0
+          selectedSchedule.length === 0
             ? styles.sendButtonDisabled
             : styles.deleteButton
         }
-        onClick={handleDelete}
+        onClick={handleDeleteClick}
       >
         삭제
       </button>
+      <ChatDeleteConfirmModal
+        open={isDeleteModalOpen}
+        count={selectedSchedule.length}
+        onConfirm={handleDeleteConfirm}
+        onClose={handleDeleteClose}
+        loading={isDeleting}
+      />
       <ChatScenarioModal
         open={isScenarioModalOpen}
         scenarios={scenarios}

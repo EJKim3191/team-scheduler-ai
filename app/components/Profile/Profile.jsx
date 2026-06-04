@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { setCookie, deleteCookie } from "@/utils/cookie";
+import { deleteCookie } from "@/utils/cookie";
 import styles from "./Profile.module.css";
 
 function Profile({ profile, teams, selectedTeamId }) {

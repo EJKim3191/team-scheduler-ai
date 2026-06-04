@@ -102,3 +102,58 @@
   vertical-align: middle;
   white-space: nowrap;
 }
+
+/* 이슈 미선택 시: 캘린더 그리드와 동일한 영역 + 중앙 메시지 */
+.emptyWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: calc(clamp(32px, 4.5vw, 40px) + clamp(26px, 4vw, 32px) * 24);
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #fafafa 0%, #ffffff 48%, #f9fafb 100%);
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  max-width: min(360px, 90%);
+  padding: 24px 20px;
+  text-align: center;
+}
+
+.emptyTitle {
+  margin: 0;
+  font-size: clamp(16px, 2.5vw, 18px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #111827;
+}
+
+.emptyDescription {
+  margin: 0;
+  font-size: clamp(13px, 1.8vw, 14px);
+  line-height: 1.55;
+  color: #6b7280;
+  word-break: keep-all;
+}
+
+@media (prefers-color-scheme: dark) {
+  .emptyWrap {
+    border-color: #374151;
+    background: linear-gradient(180deg, #0f172a 0%, #111827 48%, #0f172a 100%);
+  }
+
+  .emptyTitle {
+    color: #f9fafb;
+  }
+
+  .emptyDescription {
+    color: #9ca3af;
+  }
+}

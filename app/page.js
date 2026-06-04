@@ -96,7 +96,7 @@ export default async function Home({ searchParams }) {
             />
           </div>
           <div className={styles.calendarCell}>
-            <CalendarComponent team={selectedTeam} />
+            <CalendarComponent profile={profile[0]} team={selectedTeam} />
           </div>
           <div className={styles.mainRightContainer}>
             <div className={styles.issueSelectorWrap}>

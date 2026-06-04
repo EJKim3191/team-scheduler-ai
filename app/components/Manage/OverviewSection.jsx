@@ -7,7 +7,6 @@ import LoadingWheel from "@/app/components/LoadingWheel/LoadingWheel";
 
 export default function OverviewSection() {
   const [logs, setLogs] = useState([]);
-  const [issues, setIssues] = useState([]);
   const [isLoadingLogs, setIsLoadingLogs] = useState(true);
   const [isLoadingIssues, setIsLoadingIssues] = useState(true);
   const [calculatedIssues, setCalculatedIssues] = useState({
@@ -50,7 +49,6 @@ export default function OverviewSection() {
         return;
       }
 
-      setIssues(data.issues);
       const openIssues = data.issues.filter((issue) => issue.status === "open");
 
       const responseParticipation = await fetch("/api/user/issue/participate", {
