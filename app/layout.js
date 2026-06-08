@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import ogUrl from "@/public/OG_image.png";
+import { SITE_URL } from "@/lib/site";
 import { CookiesProvider } from "next-client-cookies/server";
 
 import "./globals.css";
@@ -17,13 +18,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "AI 팀 싱크",
+  title: "모여라",
   description: "AI 팀 싱크를 사용하여 팀 일정을 조율해보세요.",
   openGraph: {
-    title: "AI 팀 싱크",
+    title: "모여라",
     description: "가볍고 빠르게 팀 싱크를 이용해보세요!",
-    url: "https://team-scheduler-ai-omega.vercel.app/", // 실제 서비스 도메인
-    siteName: "AI 팀 싱크",
+    url: `${SITE_URL}/`,
+    siteName: "모여라",
     images: [
       {
         url: ogUrl.src, // ⭐️ 중요: 반드시 도메인이 포함된 절대 경로!
