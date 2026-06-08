@@ -36,17 +36,17 @@ export const metadata = {
     locale: "ko_KR",
     type: "website",
   },
+  verification: {
+    google: "b4gVRX-jdjyjK0gN2XDlxw85xMN2QdBvdiaqvF7rAqA",
+  },
+  other: {
+    "naver-site-verification": "a9c57771d1b1e804a4c13f1e000ad4d84ed51a4a",
+  },
 };
 
 export default async function RootLayout({ children }) {
   return (
     <html lang="en">
-      <head>
-        <meta
-          name="google-site-verification"
-          content="b4gVRX-jdjyjK0gN2XDlxw85xMN2QdBvdiaqvF7rAqA"
-        />
-      </head>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <CookiesProvider>{children}</CookiesProvider>
       </body>
