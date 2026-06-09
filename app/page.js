@@ -4,6 +4,7 @@ import styles from "./page.module.css";
 import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { cache } from "react";
 
 import CalendarComponent from "./components/Calendar/Calendar";
 import ChatComponent from "./components/Chat/Chat";
@@ -82,16 +83,29 @@ export default async function Home({ searchParams }) {
     )`,
     )
     .eq("team_id", selectedTeam?.team_id);
-  const userCalendarData = await fetch(`${siteUrl}/api/calendar/user`, {
-    method: "POST",
-    body: JSON.stringify({
-      access_token: access_token.value,
-      refresh_token: refresh_token.value,
-      team_id: selectedTeam?.team_id,
-    }),
-  });
+  const userCalendarData = cache(
+    async (access_token, refresh_token, team_id) => {
+      const response = await fetch(`${siteUrl}/api/calendar/user`, {
+        method: "POST",
+        body: JSON.stringify({
+          access_token: access_token,
+          refresh_token: refresh_token,
+          team_id: team_id,
+        }),
+        next: {
+          tags: [`team-${teamId}`],
+        },
+      });
 
-  const { response: userCalendarDataResponse } = await userCalendarData.json();
+      return response.json();
+    },
+  );
+
+  const { response: userCalendarDataResponse } = await userCalendarData(
+    access_token.value,
+    refresh_token.value,
+    selectedTeam?.team_id,
+  );
 
   //TODO: 다중 팀일 경우 선택된 팀
   return (

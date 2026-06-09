@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 const { NextResponse } = require("next/server");
 
-async function deleteUserDataByScheduleIds(scheduleIds) {
+async function deleteUserDataByScheduleIds(scheduleIds, team_id) {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("user_schedules")
@@ -47,8 +47,8 @@ async function POST(req) {
 }
 
 async function DELETE(req) {
-  const { selectedSchedule } = await req.json();
-  const response = await deleteUserDataByScheduleIds(selectedSchedule);
+  const { selectedSchedule, team_id } = await req.json();
+  const response = await deleteUserDataByScheduleIds(selectedSchedule, team_id);
 
   return NextResponse.json({ response });
 }

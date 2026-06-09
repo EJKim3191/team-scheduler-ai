@@ -55,26 +55,12 @@ const ChatComponent = ({ profile, team, issues }) => {
   const clearSelectedSchedule = useCalander(
     (state) => state.clearSelectedSchedule,
   );
-  const setUserData = useUser((state) => state.setUsers);
 
   const selectedIssue = issues.find(
     (issue) => issue.id === Number(params.get("issueId")),
   );
 
   const selectedTeamId = params.get("teamId");
-
-  const fetchUserData = async () => {
-    const response = await fetch("/api/calendar/user", {
-      method: "POST",
-      // body: JSON.stringify({ token: localStorage.getItem("user_id") }),
-      body: JSON.stringify({
-        access_token: getCookie("sb-access-token"),
-        refresh_token: getCookie("sb-refresh-token"),
-      }),
-    });
-    const data = await response.json();
-    setUserData(data.response);
-  };
 
   const buildPostData = (scenario) =>
     scenario.data.map((item) => ({
@@ -100,7 +86,6 @@ const ChatComponent = ({ profile, team, issues }) => {
     if (!calendarData.error) {
       setMessage("");
       router.refresh();
-      fetchUserData();
       return true;
     }
     alert("일정 추가 실패");
@@ -231,6 +216,7 @@ const ChatComponent = ({ profile, team, issues }) => {
           selectedSchedule: selectedSchedule,
           access_token: getCookie("sb-access-token"),
           refresh_token: getCookie("sb-refresh-token"),
+          team_id: Number(selectedTeamId),
         }),
       });
 
@@ -239,7 +225,6 @@ const ChatComponent = ({ profile, team, issues }) => {
         clearSelectedSchedule();
         setIsDeleteModalOpen(false);
         router.refresh();
-        fetchUserData();
       } else {
         alert("삭제 실패");
       }

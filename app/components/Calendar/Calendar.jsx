@@ -48,7 +48,7 @@ const CalendarComponent = ({ profile, team, calendarData = [] }) => {
     );
 
     setUserData(userCalendarData);
-  }, [team.team_id, issueId, teamId]);
+  }, [team.team_id, issueId, teamId, calendarData]);
 
   const weekDays = useMemo(() => {
     const start = getStartOfWeek(selectedDate);
