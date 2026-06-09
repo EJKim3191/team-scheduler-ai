@@ -83,23 +83,18 @@ export default async function Home({ searchParams }) {
     )`,
     )
     .eq("team_id", selectedTeam?.team_id);
-  const userCalendarData = cache(
-    async (access_token, refresh_token, team_id) => {
-      const response = await fetch(`${siteUrl}/api/calendar/user`, {
-        method: "POST",
-        body: JSON.stringify({
-          access_token: access_token,
-          refresh_token: refresh_token,
-          team_id: team_id,
-        }),
-        next: {
-          tags: [`team-${teamId}`],
-        },
-      });
+  const userCalendarData = async (access_token, refresh_token, team_id) => {
+    const response = await fetch(`${siteUrl}/api/calendar/user`, {
+      method: "POST",
+      body: JSON.stringify({
+        access_token: access_token,
+        refresh_token: refresh_token,
+        team_id: team_id,
+      }),
+    });
 
-      return response.json();
-    },
-  );
+    return response.json();
+  };
 
   const { response: userCalendarDataResponse } = await userCalendarData(
     access_token.value,
