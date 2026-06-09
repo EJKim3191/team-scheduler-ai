@@ -23,6 +23,11 @@ export default async function Home({ searchParams }) {
   const access_token = cookieStore.get("sb-access-token");
   const refresh_token = cookieStore.get("sb-refresh-token");
 
+  const siteUrl =
+    process.env.VERCEL_ENV === "production"
+      ? process.env.VERCEL_PROJECT_PRODUCTION_URL
+      : process.env.VERCEL_URL;
+
   if (!access_token || !refresh_token) {
     redirect("/login");
   }
@@ -77,6 +82,16 @@ export default async function Home({ searchParams }) {
     )`,
     )
     .eq("team_id", selectedTeam?.team_id);
+  const userCalendarData = await fetch(`${siteUrl}/api/calendar/user`, {
+    method: "POST",
+    body: JSON.stringify({
+      access_token: access_token.value,
+      refresh_token: refresh_token.value,
+      team_id: selectedTeam?.team_id,
+    }),
+  });
+
+  const { response: userCalendarDataResponse } = await userCalendarData.json();
 
   //TODO: 다중 팀일 경우 선택된 팀
   return (
@@ -96,14 +111,21 @@ export default async function Home({ searchParams }) {
             />
           </div>
           <div className={styles.calendarCell}>
-            <CalendarComponent profile={profile[0]} team={selectedTeam} />
+            <CalendarComponent
+              profile={profile[0]}
+              team={selectedTeam}
+              calendarData={userCalendarDataResponse}
+            />
           </div>
           <div className={styles.mainRightContainer}>
             <div className={styles.issueSelectorWrap}>
               <IssueSelector issues={issues} />
             </div>
             <GradientBar />
-            <TeamMateComponent teamMembers={teamMembers} />
+            <TeamMateComponent
+              teamMembers={teamMembers}
+              calendarData={userCalendarDataResponse}
+            />
             <IssueStatus issues={issues} />
             <ChatComponent profile={profile[0]} team={team} issues={issues} />
           </div>

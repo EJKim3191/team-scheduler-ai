@@ -49,7 +49,6 @@ function Profile({ profile, teams, selectedTeamId }) {
     deleteCookie("sb-access-token");
     deleteCookie("sb-refresh-token");
     router.push("/login");
-    router.refresh();
   };
 
   const handleCopyTeamCode = async (event) => {

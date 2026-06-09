@@ -24,7 +24,7 @@ const getStartOfWeek = (date) => {
   return d;
 };
 
-const CalendarComponent = ({ profile, team }) => {
+const CalendarComponent = ({ profile, team, calendarData = [] }) => {
   const searchParams = useSearchParams();
   const issueId = searchParams.get("issueId");
   const teamId = searchParams.get("teamId");
@@ -40,31 +40,15 @@ const CalendarComponent = ({ profile, team }) => {
   useEffect(() => {
     if (!issueId || !teamId) {
       setUserData([]);
+      return;
     }
-  }, [issueId, teamId]);
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      if (!issueId || !teamId) return;
+    const userCalendarData = calendarData.filter(
+      (schedule) => Number(schedule.issue_id) === Number(issueId),
+    );
 
-      const response = await fetch("/api/calendar/user", {
-        method: "POST",
-        body: JSON.stringify({
-          access_token: getCookie("sb-access-token"),
-          refresh_token: getCookie("sb-refresh-token"),
-          team_id: team.team_id,
-        }),
-      });
-      const data = await response.json();
-
-      data.response = data.response.filter(
-        (schedule) => Number(schedule.issue_id) === Number(issueId),
-      );
-
-      setUserData(data.response);
-    };
-    fetchUserData();
-  }, [team.team_id]);
+    setUserData(userCalendarData);
+  }, [team.team_id, issueId, teamId]);
 
   const weekDays = useMemo(() => {
     const start = getStartOfWeek(selectedDate);

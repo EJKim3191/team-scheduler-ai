@@ -47,7 +47,6 @@ function TeamSelector({
       return;
     }
     router.push(`/?teamId=${teamId}`);
-    router.refresh();
   };
 
   return (

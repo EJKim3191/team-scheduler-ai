@@ -196,14 +196,12 @@ function IssueSelector({
       const currentParams = new URLSearchParams(searchParams.toString());
       currentParams.delete("issueId");
       router.push(`${pathname}?${currentParams.toString()}`, { scroll: false });
-      router.refresh();
       return;
     }
 
     const currentParams = new URLSearchParams(searchParams.toString());
     currentParams.set("issueId", issueId);
     router.push(`${pathname}?${currentParams.toString()}`, { scroll: false });
-    router.refresh();
   };
 
   const onAddIssue = () => {

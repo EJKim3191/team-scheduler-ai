@@ -110,7 +110,6 @@ export default function MakeTeamPage() {
     deleteCookie("sb-access-token");
     deleteCookie("sb-refresh-token");
     router.push("/login");
-    router.refresh();
   };
 
   return (

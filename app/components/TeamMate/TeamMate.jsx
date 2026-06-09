@@ -8,7 +8,7 @@ import { getCookie } from "@/utils/cookie";
 import { useSearchParams } from "next/navigation";
 import { getColorForUser } from "@/utils/userColor";
 
-const TeamMateComponent = ({ teamMembers }) => {
+const TeamMateComponent = ({ teamMembers, calendarData = [] }) => {
   const searchParams = useSearchParams();
   const issueId = searchParams.get("issueId");
   const teamId = searchParams.get("teamId");
@@ -30,29 +30,18 @@ const TeamMateComponent = ({ teamMembers }) => {
   useEffect(() => {
     if (!issueId || !teamId) return;
     const fetchTeamSchedules = async () => {
-      const response = await fetch("/api/calendar/user", {
-        method: "POST",
-        body: JSON.stringify({
-          access_token: getCookie("sb-access-token"),
-          refresh_token: getCookie("sb-refresh-token"),
-          team_id: teamId,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!data.response) {
+      if (!calendarData || calendarData.length === 0) {
         setParticipatingUsers([]);
         setNonParticipatingUsers([]);
         return;
       }
 
-      data.response = data.response.filter(
+      const filteredCalendarData = calendarData.filter(
         (schedule) => Number(schedule.issue_id) === Number(issueId),
       );
 
       const profileMap = new Map();
-      data.response.forEach((item) => {
+      filteredCalendarData.forEach((item) => {
         profileMap.set(item.profile_id, item.profiles.user_name);
       });
 
