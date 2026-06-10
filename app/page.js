@@ -40,17 +40,25 @@ export default async function Home({ searchParams }) {
       refresh_token: refresh_token.value,
     });
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("user_name, id")
-    .eq("id", sessionData.user.id);
+  const getProfile = async () => {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("user_name, id")
+      .eq("id", sessionData.user.id);
+    return profile;
+  };
+
+  const getMyTeams = async () => {
+    const { data: myTeams } = await supabase
+      .from("team_members")
+      .select("team_id")
+      .eq("profile_id", sessionData.user.id);
+    return myTeams;
+  };
+
+  const [profile, myTeams] = await Promise.all([getProfile(), getMyTeams()]);
 
   // 내가 있는 팀
-  const { data: myTeams } = await supabase
-    .from("team_members")
-    .select("team_id")
-    .eq("profile_id", sessionData.user.id);
-
   if (myTeams.length === 0) {
     redirect("/make-team");
   }
@@ -68,21 +76,34 @@ export default async function Home({ searchParams }) {
   }
 
   const matchedTeam = team.find((team) => team.team_id === Number(teamId));
-
   const selectedTeam = matchedTeam ? matchedTeam : team[0];
-  const { data: issues } = await supabase
-    .from("issues")
-    .select("*")
-    .eq("team_id", selectedTeam?.team_id);
 
-  const { data: teamMembers } = await supabase
-    .from("team_members")
-    .select(
-      `*, profiles (
+  const getIssues = async () => {
+    const { data: issues } = await supabase
+      .from("issues")
+      .select("*")
+      .eq("team_id", selectedTeam?.team_id);
+    return issues;
+  };
+
+  const getTeamMembers = async () => {
+    const { data: teamMembers } = await supabase
+      .from("team_members")
+      .select(
+        `*, profiles (
       user_name
     )`,
-    )
-    .eq("team_id", selectedTeam?.team_id);
+      )
+      .eq("team_id", selectedTeam?.team_id);
+
+    return teamMembers;
+  };
+
+  const [issues, teamMembers] = await Promise.all([
+    getIssues(),
+    getTeamMembers(),
+  ]);
+
   const userCalendarData = async (access_token, refresh_token, team_id) => {
     const response = await fetch(`${siteUrl}/api/calendar/user`, {
       method: "POST",
