@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import useTeam from "@/app/store/team";
 import useUser from "@/app/store/user";
 import { setCookie } from "@/utils/cookie";
+import LoadingOverlay from "@/app/components/LoadingOverlay/LoadingOverlay";
 
 function LoginPage() {
   const router = useRouter();
@@ -18,6 +19,7 @@ function LoginPage() {
   const [id, setId] = useState("");
   const [password, setPassword] = useState("");
   const [isSignup, setIsSignup] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   // helper로 분리
 
@@ -34,6 +36,7 @@ function LoginPage() {
   };
   const onLogin = async () => {
     try {
+      setIsLoading(true);
       const response = await fetch("/api/user/login", {
         method: "POST",
         body: JSON.stringify({ userName: id, password: password }),
@@ -54,6 +57,8 @@ function LoginPage() {
     } catch (error) {
       // TODO:서버 에러 메시지 표시
       alert("로그인 실패: 아이디 또는 비밀번호가 올바르지 않습니다.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -116,6 +121,7 @@ function LoginPage() {
           </form>
         )}
       </section>
+      <LoadingOverlay open={isLoading} label="로딩 중..." />
     </div>
   );
 }
