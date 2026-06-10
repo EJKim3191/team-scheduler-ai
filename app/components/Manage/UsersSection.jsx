@@ -173,6 +173,7 @@ export default function UsersSection() {
   };
 
   useEffect(() => {
+    if (!selectedTeamId) return;
     const fetchInvitations = async () => {
       const response = await fetch("/api/team/invitation", {
         method: "POST",
