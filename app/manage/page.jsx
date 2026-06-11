@@ -16,6 +16,11 @@ const MENU_ITEMS = [
   // { key: "settings", label: "설정" },
 ];
 
+const siteUrl =
+  process.env.VERCEL_ENV === "production"
+    ? process.env.VERCEL_PROJECT_PRODUCTION_URL
+    : process.env.VERCEL_URL;
+
 function getActiveTab(tab) {
   if (typeof tab !== "string") return "overview";
   return MENU_ITEMS.some((m) => m.key === tab) ? tab : "overview";
@@ -169,12 +174,12 @@ function NavIcon({ name }) {
   }
 }
 
-function Content({ tab }) {
+function Content({ tab, teamInfo }) {
   switch (tab) {
     case "teams":
-      return <TeamsSection />;
+      return <TeamsSection teamInfo={teamInfo} />;
     case "users":
-      return <UsersSection />;
+      return <UsersSection teamInfo={teamInfo} />;
     case "settings":
       // TODO: TBD 설정 설계 및 구현 완료 시 주석 해제
       // return <SettingsSection />;
@@ -205,6 +210,96 @@ export default async function ManagePage({ searchParams }) {
 
   const activeLabel =
     MENU_ITEMS.find((m) => m.key === activeTab)?.label ?? "대시보드";
+
+  const getMyTeam = async (access_token, refresh_token, joinedAt) => {
+    const response = await fetch(`${siteUrl}/api/team/my-teams`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        access_token: access_token,
+        refresh_token: refresh_token,
+        joined_at: joinedAt,
+      }),
+      cache: "force-cache",
+      next: { tags: [`menu-tab-${joinedAt}`] },
+    });
+    return response.json();
+  };
+
+  const getTeamInfo = async (
+    access_token,
+    refresh_token,
+    myTeams,
+    lastUpdated,
+  ) => {
+    const response = await fetch(`${siteUrl}/api/team/info`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        access_token: access_token,
+        refresh_token: refresh_token,
+        myTeams: myTeams,
+        lastUpdated: lastUpdated,
+      }),
+      cache: "force-cache",
+      next: { tags: [`menu-tab-${lastUpdated}`] },
+    });
+    return response.json();
+  };
+
+  const getLastUpdated = async (teamInfo) => {
+    let endpoint = "";
+    for (const team of teamInfo) {
+      endpoint += `teamId=${team.team_id}&`;
+    }
+    endpoint = endpoint.slice(0, -1);
+
+    const response = await fetch(
+      `${siteUrl}/api/team/last-updated?${endpoint}`,
+    );
+
+    return response.json();
+  };
+
+  const getJoinedAt = async () => {
+    const response = await fetch(`${siteUrl}/api/team/last-joined`, {
+      headers: {
+        Authorization: `Bearer ${token.value}`,
+        "Content-Type": "application/json",
+      },
+    });
+    return response.json();
+  };
+
+  const joinedAt = await getJoinedAt();
+
+  const { teams: myTeamInfo } = await getMyTeam(
+    token.value,
+    refresh_token.value,
+    joinedAt,
+  );
+
+  const lastUpdated = await getLastUpdated(myTeamInfo);
+
+  const { teams: teamInfo } = await getTeamInfo(
+    token.value,
+    refresh_token.value,
+    myTeamInfo,
+    lastUpdated,
+  );
+
+  const getLastUpdatedUrl = (teamInfo) => {
+    let endpoint = "";
+    for (const team of teamInfo) {
+      endpoint += `teamId=${team.team_id}&`;
+    }
+    endpoint = endpoint.slice(0, -1);
+
+    return `${siteUrl}/api/team/last-updated?${endpoint}`;
+  };
+
+  const response = await fetch(getLastUpdatedUrl(teamInfo));
+  const data = await response.json();
 
   return (
     <div className={styles.page}>
@@ -271,7 +366,7 @@ export default async function ManagePage({ searchParams }) {
             </header>
 
             <div className={styles.contentBody}>
-              <Content tab={activeTab} />
+              <Content tab={activeTab} teamInfo={teamInfo} />
             </div>
           </section>
         </div>

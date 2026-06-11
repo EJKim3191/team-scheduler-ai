@@ -33,7 +33,7 @@ function RefreshIcon() {
   );
 }
 
-export default function TeamsSection() {
+export default function TeamsSection({ teamInfo }) {
   const [teams, setTeams] = useState([]);
   const [isLoadingTeams, setIsLoadingTeams] = useState(true);
   const [teamName, setTeamName] = useState("");
@@ -45,30 +45,10 @@ export default function TeamsSection() {
   const [isJoinSubmitDisabled, setIsJoinSubmitDisabled] = useState(true);
   const [isSendingJoinRequest, setIsSendingJoinRequest] = useState(false);
 
-  const fetchTeams = useCallback(async ({ withLoader = false } = {}) => {
-    if (withLoader) setIsLoadingTeams(true);
-    try {
-      const response = await fetch("/api/team/info", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          access_token: getCookie("sb-access-token"),
-          refresh_token: getCookie("sb-refresh-token"),
-          additionalInfo: true,
-        }),
-      });
-      const data = await response.json();
-      if (data.success && Array.isArray(data.teams)) {
-        setTeams(data.teams);
-      }
-    } finally {
-      if (withLoader) setIsLoadingTeams(false);
-    }
-  }, []);
-
   useEffect(() => {
-    fetchTeams({ withLoader: true });
-  }, [fetchTeams]);
+    setTeams(teamInfo);
+    setIsLoadingTeams(false);
+  }, [teamInfo]);
 
   useEffect(() => {
     const isValid =

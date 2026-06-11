@@ -1,22 +1,13 @@
 import { createClient } from "@/lib/supabase/server";
 const { NextResponse } = require("next/server");
 
-async function getTeam(access_token, refresh_token, additionalInfo = false) {
+async function getTeam(
+  access_token,
+  refresh_token,
+  additionalInfo = false,
+  myTeams,
+) {
   const supabase = await createClient();
-  const { data: sessionData, error: sessionError } =
-    await supabase.auth.setSession({
-      access_token: access_token,
-      refresh_token: refresh_token,
-    });
-
-  if (sessionError) {
-    return { success: false, message: sessionError.message };
-  }
-
-  const { data: myTeams } = await supabase
-    .from("team_members")
-    .select("team_id")
-    .eq("profile_id", sessionData.user.id);
 
   const { data: teams, error: teamsError } = await supabase
     .from("team")
@@ -90,8 +81,16 @@ async function POST(req) {
     access_token,
     refresh_token,
     additionalInfo = false,
+    myTeams,
+    lastUpdated,
   } = await req.json();
-  const response = await getTeam(access_token, refresh_token, additionalInfo);
+
+  const response = await getTeam(
+    access_token,
+    refresh_token,
+    additionalInfo,
+    myTeams,
+  );
   if (!response.success) {
     return NextResponse.json({ success: false, message: response.message });
   }

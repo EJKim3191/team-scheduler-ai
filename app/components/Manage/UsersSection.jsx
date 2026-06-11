@@ -46,7 +46,7 @@ function CancelIcon() {
   );
 }
 
-export default function UsersSection() {
+export default function UsersSection({ teamInfo }) {
   const [myProfile, setMyProfile] = useState({});
   const [teams, setTeams] = useState([]);
   const [members, setMembers] = useState([]);
@@ -61,28 +61,10 @@ export default function UsersSection() {
   const [invitationsReceived, setInvitationsReceived] = useState([]);
 
   useEffect(() => {
-    const fetchTeams = async () => {
-      setIsLoadingTeams(true);
-      try {
-        const response = await fetch("/api/team/info", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            access_token: getCookie("sb-access-token"),
-            refresh_token: getCookie("sb-refresh-token"),
-          }),
-        });
-        const data = await response.json();
-        if (data.success && Array.isArray(data.teams)) {
-          setTeams(data.teams);
-          setSelectedTeamId(data.teams[0]?.team_id ?? "");
-        }
-      } finally {
-        setIsLoadingTeams(false);
-      }
-    };
-    fetchTeams();
-  }, []);
+    setTeams(teamInfo);
+    setSelectedTeamId(teamInfo[0]?.team_id ?? "");
+    setIsLoadingTeams(false);
+  }, [teamInfo]);
 
   useEffect(() => {
     const fetchMyProfile = async () => {

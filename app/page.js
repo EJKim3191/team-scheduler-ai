@@ -17,17 +17,17 @@ import TeamSelector from "./components/TeamSelector/TeamSelector";
 import IssueSelector from "./components/IssueSelector/IssueSelector";
 import IssueStatus from "./components/IssueStatus/IssueStatus";
 
+const siteUrl =
+  process.env.VERCEL_ENV === "production"
+    ? process.env.VERCEL_PROJECT_PRODUCTION_URL
+    : process.env.VERCEL_URL;
+
 export default async function Home({ searchParams }) {
   const params = await searchParams;
   const teamId = params.teamId;
   const cookieStore = await cookies();
   const access_token = cookieStore.get("sb-access-token");
   const refresh_token = cookieStore.get("sb-refresh-token");
-
-  const siteUrl =
-    process.env.VERCEL_ENV === "production"
-      ? process.env.VERCEL_PROJECT_PRODUCTION_URL
-      : process.env.VERCEL_URL;
 
   if (!access_token || !refresh_token) {
     redirect("/login");
