@@ -1,0 +1,113 @@
+.root {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: clamp(16px, 4vw, 32px);
+  font-family: var(--font-geist-sans);
+}
+
+.panel {
+  display: flex;
+  align-items: flex-start;
+  gap: clamp(16px, 3vw, 28px);
+}
+
+.canvas {
+  display: block;
+  border: 2px solid #333333;
+  border-radius: 4px;
+  background: #111111;
+}
+
+.sidebar {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 140px;
+  color: #404040;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #171717;
+}
+
+.stats {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.stats div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stats dt {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #a3a3a3;
+}
+
+.stats dd {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #262626;
+}
+
+.modifiers {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  border: 1px dashed #d4d4d4;
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: #737373;
+  list-style: none;
+}
+
+.controls {
+  font-size: 12px;
+  line-height: 1.6;
+  color: #737373;
+}
+
+.overlay {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 8px;
+  border-top: 1px solid #e5e5e5;
+}
+
+.overlay p {
+  font-size: 14px;
+  font-weight: 600;
+  color: #171717;
+}
+
+.overlay button {
+  padding: 8px 12px;
+  border: 1px solid #d4d4d4;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #262626;
+  background: #fafafa;
+  cursor: pointer;
+}
+
+.overlay button:hover {
+  background: #f0f0f0;
+}

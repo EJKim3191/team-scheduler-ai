@@ -1,9 +1,5 @@
-import Link from "next/link";
-
+import LandingContent from "./LandingContent";
 import styles from "./Landing.module.css";
-import SectionOne from "./SectionOne";
-import SectionTwo from "./SectionTwo";
-import SectionThree from "./SectionThree";
 
 export const metadata = {
   title: "AI 팀 싱크 — 팀 일정, 한곳에서",
@@ -14,10 +10,7 @@ export const metadata = {
 export default function LandingPage() {
   return (
     <main className={styles.root}>
-      <div className={styles.bg} aria-hidden />
-      <SectionOne />
-      <SectionTwo />
-      <SectionThree />
+      <LandingContent />
     </main>
   );
 }
