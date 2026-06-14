@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import LandingContent from "./LandingContent";
 import styles from "./Landing.module.css";
 
@@ -10,6 +12,11 @@ export const metadata = {
 export default function LandingPage() {
   return (
     <main className={styles.root}>
+      <nav className={styles.loginNav} aria-label="계정">
+        <Link href="/login" className={styles.loginLink}>
+          로그인 / 회원가입
+        </Link>
+      </nav>
       <LandingContent />
     </main>
   );

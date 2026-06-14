@@ -12,6 +12,32 @@
   font-family: var(--font-geist-sans);
 }
 
+.loginNav {
+  position: absolute;
+  top: clamp(16px, 3vh, 28px);
+  right: clamp(16px, 4vw, 32px);
+  z-index: 20;
+  margin: 0;
+  padding: 0;
+  pointer-events: auto;
+}
+
+.loginLink {
+  display: inline-block;
+  padding: 0;
+  border: none;
+  font-size: 13px;
+  font-weight: 500;
+  color: #737373;
+  text-decoration: none;
+  background: none;
+  transition: color 0.2s ease;
+}
+
+.loginLink:hover {
+  color: #171717;
+}
+
 .stageStack {
   position: relative;
   flex: 1;
