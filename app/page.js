@@ -4,7 +4,6 @@ import styles from "./page.module.css";
 import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { cache } from "react";
 
 import CalendarComponent from "./components/Calendar/Calendar";
 import ChatComponent from "./components/Chat/Chat";
@@ -26,8 +25,13 @@ export default async function Home({ searchParams }) {
   const params = await searchParams;
   const teamId = params.teamId;
   const cookieStore = await cookies();
+  const hasVisited = cookieStore.get("has-visited");
   const access_token = cookieStore.get("sb-access-token");
   const refresh_token = cookieStore.get("sb-refresh-token");
+
+  if (!hasVisited) {
+    redirect("/landing");
+  }
 
   if (!access_token || !refresh_token) {
     redirect("/login");

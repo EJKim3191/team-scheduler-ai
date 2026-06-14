@@ -4,9 +4,14 @@ import { useEffect, useRef } from "react";
 
 import BrandMark from "../BrandMark/BrandMark";
 import styles from "./Opening.module.css";
+import { setCookie } from "@/utils/cookie";
 
 export default function Opening({ onContinue }) {
   const hasContinued = useRef(false);
+
+  useEffect(() => {
+    setCookie("has-visited", "true", Infinity);
+  }, []);
 
   useEffect(() => {
     const handleKeyDown = () => {
