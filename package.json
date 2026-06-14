@@ -1,6 +1,6 @@
 {
   "name": "team-shceduler-ai",
-  "version": "0.1.63",
+  "version": "0.1.7",
   "private": true,
   "scripts": {
     "dev": "next dev",
