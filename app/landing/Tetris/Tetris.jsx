@@ -117,6 +117,7 @@ const END_MESSAGES = {
 export default function Tetris({
   instanceId = "default",
   isActive = true,
+  isPlaying = true,
   options = { lineLimit: 0 },
   onContinue,
 }) {
@@ -124,6 +125,7 @@ export default function Tetris({
   const gameRef = useRef(createInitialState());
   const optionsRef = useRef(options);
   const isActiveRef = useRef(isActive);
+  const isPlayingRef = useRef(isPlaying);
   const [score, setScore] = useState(0);
   const [lines, setLines] = useState(0);
   const [gameOver, setGameOver] = useState(false);
@@ -138,6 +140,7 @@ export default function Tetris({
 
   optionsRef.current = options;
   isActiveRef.current = isActive;
+  isPlayingRef.current = isPlaying;
 
   const syncUi = useCallback(
     (state) => {
@@ -170,6 +173,11 @@ export default function Tetris({
     if (!isActive) return;
     resetGame();
   }, [isActive, instanceId, resetGame]);
+
+  useEffect(() => {
+    if (!isActive || !isPlaying) return;
+    resetGame();
+  }, [isActive, isPlaying, instanceId, resetGame]);
 
   const settlePiece = useCallback(
     (state) => {
@@ -212,18 +220,13 @@ export default function Tetris({
   );
 
   useEffect(() => {
-    if (!isActive || !gameOver) return;
+    if (!isActive || !isPlaying || !gameOver) return;
     onContinue?.();
-  }, [isActive, gameOver, onContinue]);
+  }, [isActive, isPlaying, gameOver, onContinue]);
 
-  useEffect(() => {
-    if (!isActive) return undefined;
-
-    const canvas = canvasRef.current;
-    if (!canvas) return undefined;
-
+  const setupCanvas = useCallback((canvas) => {
     const ctx = canvas.getContext("2d");
-    if (!ctx) return undefined;
+    if (!ctx) return null;
 
     const dpr = window.devicePixelRatio || 1;
     const width = cols * cellSize;
@@ -233,12 +236,39 @@ export default function Tetris({
     canvas.height = height * dpr;
     canvas.style.width = `${width}px`;
     canvas.style.height = `${height}px`;
-    ctx.scale(dpr, dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    return ctx;
+  }, []);
+
+  useEffect(() => {
+    if (!isActive || isPlaying) return undefined;
+
+    const canvas = canvasRef.current;
+    if (!canvas) return undefined;
+
+    const ctx = setupCanvas(canvas);
+    if (!ctx) return undefined;
+
+    const state = gameRef.current;
+    drawBoard(ctx, state.board, state.activePieces);
+
+    return undefined;
+  }, [isActive, isPlaying, instanceId, setupCanvas]);
+
+  useEffect(() => {
+    if (!isActive || !isPlaying) return undefined;
+
+    const canvas = canvasRef.current;
+    if (!canvas) return undefined;
+
+    const ctx = setupCanvas(canvas);
+    if (!ctx) return undefined;
 
     let frameId;
 
     const loop = (time) => {
-      if (!isActiveRef.current) return;
+      if (!isActiveRef.current || !isPlayingRef.current) return;
 
       const state = gameRef.current;
 
@@ -266,13 +296,13 @@ export default function Tetris({
 
     frameId = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(frameId);
-  }, [isActive, instanceId, settlePiece]);
+  }, [isActive, isPlaying, instanceId, settlePiece, setupCanvas]);
 
   useEffect(() => {
-    if (!isActive) return undefined;
+    if (!isActive || !isPlaying) return undefined;
 
     const handleKeyDown = (event) => {
-      if (!isActiveRef.current) return;
+      if (!isActiveRef.current || !isPlayingRef.current) return;
 
       let state = gameRef.current;
       if (state.gameOver) return;
@@ -348,7 +378,14 @@ export default function Tetris({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isActive, instanceId, commitState, settlePiece, withFirstInputChaos]);
+  }, [
+    isActive,
+    isPlaying,
+    instanceId,
+    commitState,
+    settlePiece,
+    withFirstInputChaos,
+  ]);
 
   const endMessage = END_MESSAGES[endReason] ?? "Game Over";
 

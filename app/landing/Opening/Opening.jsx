@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 
+import BrandMark from "../BrandMark/BrandMark";
 import styles from "./Opening.module.css";
 
 export default function Opening({ onContinue }) {
@@ -22,7 +23,7 @@ export default function Opening({ onContinue }) {
     <section className={styles.root} aria-label="오프닝">
       <div className={styles.content}>
         <header className={styles.header}>
-          <span className={styles.badge}>모여라</span>
+          <BrandMark size="large" />
           <h1 className={styles.title}>AI 팀 싱크</h1>
         </header>
 

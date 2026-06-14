@@ -29,27 +29,13 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
-}
-
-.badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 6px 14px;
-  border: 1px solid #d4d4d4;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  color: #525252;
-  background: #fafafa;
+  gap: 16px;
 }
 
 .title {
-  font-size: clamp(28px, 6vw, 40px);
+  font-size: clamp(18px, 3.5vw, 24px);
   font-weight: 600;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.03em;
   line-height: 1.2;
   color: #171717;
 }
@@ -76,7 +62,8 @@
 }
 
 .hint {
-  font-size: 13px;
+  font-size: clamp(16px, 2.8vw, 20px);
+  font-weight: 500;
   letter-spacing: 0.02em;
   color: #a3a3a3;
   animation: pulse 2s ease-in-out infinite;

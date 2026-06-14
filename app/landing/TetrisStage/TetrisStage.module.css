@@ -1,0 +1,85 @@
+.root {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.gameLayer {
+  width: 100%;
+  height: 100%;
+  transition: opacity 0.35s ease;
+}
+
+.gameDimmed {
+  opacity: 0.38;
+  pointer-events: none;
+}
+
+.introOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(24px, 5vw, 48px);
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(2px);
+}
+
+.introCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(20px, 4vh, 32px);
+  width: min(100%, 420px);
+  text-align: center;
+  font-family: var(--font-geist-sans);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 14px;
+  border: 1px solid #d4d4d4;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: #525252;
+  background: #fafafa;
+}
+
+.title {
+  font-size: clamp(22px, 4vw, 30px);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.3;
+  color: #171717;
+}
+
+.description {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: clamp(14px, 2.5vw, 16px);
+  line-height: 1.7;
+  color: #525252;
+}
+
+.startButton {
+  padding: 10px 20px;
+  border: 1px solid #d4d4d4;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #262626;
+  background: #ffffff;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.startButton:hover {
+  background: #f5f5f5;
+}

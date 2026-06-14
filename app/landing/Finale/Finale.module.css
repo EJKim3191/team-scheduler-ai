@@ -1,0 +1,611 @@
+.root {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: var(--font-geist-sans);
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+}
+
+.header {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(24px, 5vw, 48px);
+  text-align: center;
+  pointer-events: none;
+}
+
+.headerContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(16px, 3vh, 24px);
+  max-width: 720px;
+  pointer-events: auto;
+  transform: translateY(clamp(32px, 6vh, 56px));
+}
+
+.titleBlock {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 720px;
+}
+
+.brandMarkAbove {
+  position: absolute;
+  bottom: calc(100% + clamp(16px, 2.8vh, 24px));
+  left: 50%;
+  transform: translateX(-50%);
+  animation: headlineIn 0.7s ease;
+}
+
+.headline {
+  max-width: 720px;
+  font-size: clamp(22px, 4.2vw, 34px);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.45;
+  color: #171717;
+  animation: headlineIn 0.7s ease 0.05s both;
+}
+
+.subtext {
+  font-size: clamp(14px, 2.5vw, 16px);
+  line-height: 1.7;
+  color: #737373;
+  animation: headlineIn 0.7s ease 0.1s both;
+}
+
+.ctaButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 22px;
+  border: 1px solid #d4d4d4;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #262626;
+  text-decoration: none;
+  background: #ffffff;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+  transition: background 0.2s ease, border-color 0.2s ease;
+  animation: headlineIn 0.7s ease 0.2s both;
+}
+
+.ctaButton:hover {
+  background: #f5f5f5;
+  border-color: #a3a3a3;
+}
+
+.cloudField {
+  position: absolute;
+  inset: 0;
+}
+
+.cloud {
+  position: absolute;
+  opacity: 0;
+  transform: translateY(28px) scale(0.96);
+  transition:
+    opacity 0.8s ease,
+    transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+
+.cloudVisible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.cloudSchedule {
+  top: calc(clamp(4px, 0.8vh, 10px) + 40px);
+  left: 50%;
+  transform: translate(-50%, 28px) scale(0.96);
+}
+
+.cloudSchedule.cloudVisible {
+  transform: translate(-50%, 0) scale(1);
+}
+
+.cloudChat {
+  top: 16%;
+  right: clamp(12px, 4vw, 48px);
+}
+
+.cloudTeam {
+  bottom: calc(clamp(12px, 4vh, 40px) + 50px);
+  left: calc(clamp(12px, 4vw, 48px) + 150px);
+}
+
+.cloudScheduleEdit {
+  top: calc(14% + 50px);
+  left: calc(clamp(12px, 3vw, 40px) + 50px);
+}
+
+.cloudTeamSelect {
+  right: calc(clamp(12px, 4vw, 48px) + 70px);
+  bottom: clamp(48px, 10vh, 96px);
+}
+
+.cloudFloating .mockup {
+  animation: cloudFloat 5s ease-in-out infinite;
+}
+
+.cloudChat.cloudFloating .mockup {
+  animation-delay: 0.8s;
+}
+
+.cloudTeam.cloudFloating .mockup {
+  animation-delay: 1.6s;
+}
+
+.cloudScheduleEdit.cloudFloating .mockup {
+  animation-delay: 2.4s;
+}
+
+.cloudTeamSelect.cloudFloating .mockup {
+  animation-delay: 3.2s;
+}
+
+.mockup {
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow:
+    0 18px 40px rgba(15, 23, 42, 0.1),
+    0 4px 12px rgba(15, 23, 42, 0.06);
+  backdrop-filter: blur(8px);
+  overflow: hidden;
+}
+
+.mockupLabel {
+  padding: 10px 14px 0;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #a3a3a3;
+}
+
+/* Schedule mockup */
+.scheduleMockup {
+  width: min(52vw, 420px);
+}
+
+.scheduleHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.scheduleTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: #171717;
+}
+
+.scheduleDate {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  color: #525252;
+  background: #f5f5f5;
+}
+
+.scheduleGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  padding: 14px;
+}
+
+.scheduleDay {
+  aspect-ratio: 1;
+  border-radius: 8px;
+  background: #f5f5f5;
+}
+
+.scheduleDayActive {
+  background: linear-gradient(135deg, #c4b5fd, #93c5fd);
+}
+
+.scheduleDayMuted {
+  opacity: 0.45;
+}
+
+.scheduleBars {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0 14px 14px;
+}
+
+.scheduleBar {
+  height: 10px;
+  border-radius: 999px;
+}
+
+.scheduleBarWide {
+  width: 78%;
+  background: #fde68a;
+}
+
+.scheduleBarMid {
+  width: 56%;
+  background: #bbf7d0;
+}
+
+.scheduleBarShort {
+  width: 42%;
+  background: #bfdbfe;
+}
+
+/* Chat mockup */
+.chatMockup {
+  width: min(34vw, 280px);
+}
+
+.chatHeader {
+  padding: 12px 14px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #4f46e5;
+}
+
+.chatBody {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px;
+}
+
+.chatBubbleUser,
+.chatBubbleAi {
+  max-width: 88%;
+  padding: 8px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.chatBubbleUser {
+  align-self: flex-end;
+  color: #ffffff;
+  background: #4f46e5;
+}
+
+.chatBubbleAi {
+  align-self: flex-start;
+  color: #404040;
+  background: #f5f5f5;
+}
+
+.chatInput {
+  height: 34px;
+  margin: 0 14px 14px;
+  border: 1px solid #e5e5e5;
+  border-radius: 10px;
+  background: #fafafa;
+}
+
+/* Team mockup */
+.teamMockup {
+  width: min(36vw, 300px);
+}
+
+.teamHeader {
+  padding: 12px 14px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #171717;
+}
+
+.teamList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 14px 14px;
+  list-style: none;
+}
+
+.teamMember {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.teamAvatar {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 28px;
+  text-align: center;
+  color: #ffffff;
+}
+
+.teamAvatarA {
+  background: #60a5fa;
+}
+
+.teamAvatarB {
+  background: #4ade80;
+}
+
+.teamAvatarC {
+  background: #fb923c;
+}
+
+.teamInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.teamName {
+  font-size: 12px;
+  font-weight: 600;
+  color: #262626;
+}
+
+.teamStatus {
+  font-size: 10px;
+  color: #737373;
+}
+
+/* Schedule edit mockup */
+.editMockup {
+  width: min(32vw, 240px);
+}
+
+.editHeader {
+  padding: 12px 14px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #171717;
+}
+
+.editBody {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px 14px;
+}
+
+.editRow,
+.editRowMuted {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.editDay {
+  flex-shrink: 0;
+  width: 22px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #525252;
+}
+
+.editInputWrap {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0 10px;
+  border: 1px solid #4f46e5;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+}
+
+.editInputText {
+  font-size: 12px;
+  font-weight: 500;
+  color: #171717;
+}
+
+.editCaret {
+  width: 1px;
+  height: 14px;
+  margin-left: 1px;
+  background: #171717;
+  animation: caretBlink 1s step-end infinite;
+}
+
+.mousePointer {
+  position: absolute;
+  top: 18px;
+  left: 72%;
+  width: 14px;
+  height: 18px;
+  background: #171717;
+  clip-path: polygon(0 0, 0 14, 4 11, 7 18, 9 17, 6 10, 11 10);
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.25));
+  animation: pointerTap 2.4s ease-in-out infinite;
+}
+
+.editRowMuted {
+  opacity: 0.55;
+}
+
+.editPlaceholder {
+  font-size: 11px;
+  color: #a3a3a3;
+}
+
+/* Team selector mockup */
+.teamSelectMockup {
+  width: min(34vw, 260px);
+}
+
+.teamSelectHeader {
+  padding: 12px 14px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #171717;
+}
+
+.teamSelectBody {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px 14px;
+}
+
+.teamSelectCurrent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #262626;
+  background: #fafafa;
+}
+
+.teamSelectChevron {
+  font-size: 10px;
+  color: #737373;
+}
+
+.teamSelectList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0;
+  list-style: none;
+}
+
+.teamSelectList li {
+  padding: 7px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  color: #525252;
+}
+
+.teamSelectItemActive {
+  color: #4f46e5 !important;
+  font-weight: 600;
+  background: #eef2ff;
+}
+
+.teamCreateButton {
+  margin-top: 2px;
+  padding: 8px 10px;
+  border: 1px dashed #d4d4d4;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #525252;
+  background: #ffffff;
+  cursor: default;
+}
+
+@keyframes caretBlink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes pointerTap {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+
+  45% {
+    transform: translate(-2px, -1px);
+  }
+
+  55% {
+    transform: translate(0, 1px) scale(0.92);
+  }
+}
+
+@keyframes headlineIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes cloudFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@media (max-width: 720px) {
+  .cloudSchedule {
+    top: 44px;
+    left: 50%;
+  }
+
+  .cloudChat {
+    top: 38%;
+    right: 8px;
+  }
+
+  .cloudTeam {
+    bottom: 58px;
+    left: 158px;
+  }
+
+  .cloudScheduleEdit {
+    top: calc(10% + 50px);
+    left: 58px;
+  }
+
+  .cloudTeamSelect {
+    right: 78px;
+    bottom: 36%;
+  }
+
+  .scheduleMockup {
+    width: min(78vw, 320px);
+  }
+
+  .chatMockup,
+  .teamMockup,
+  .editMockup,
+  .teamSelectMockup {
+    width: min(58vw, 240px);
+  }
+}
