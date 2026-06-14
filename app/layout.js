@@ -39,6 +39,9 @@ export const metadata = {
   verification: {
     google: "b4gVRX-jdjyjK0gN2XDlxw85xMN2QdBvdiaqvF7rAqA",
   },
+  alternates: {
+    canonical: `${SITE_URL}/login`,
+  },
   other: {
     "naver-site-verification": "a9c57771d1b1e804a4c13f1e000ad4d84ed51a4a",
   },
