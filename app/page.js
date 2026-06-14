@@ -109,7 +109,7 @@ export default async function Home({ searchParams }) {
   ]);
 
   const userCalendarData = async (access_token, refresh_token, team_id) => {
-    const response = await fetch(`${siteUrl}/api/calendar/user`, {
+    const response = await fetch(`/api/calendar/user`, {
       method: "POST",
       body: JSON.stringify({
         access_token: access_token,

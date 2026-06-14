@@ -212,7 +212,7 @@ export default async function ManagePage({ searchParams }) {
     MENU_ITEMS.find((m) => m.key === activeTab)?.label ?? "대시보드";
 
   const getMyTeam = async (access_token, refresh_token, joinedAt) => {
-    const response = await fetch(`${siteUrl}/api/team/my-teams`, {
+    const response = await fetch(`/api/team/my-teams`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -232,7 +232,7 @@ export default async function ManagePage({ searchParams }) {
     myTeams,
     lastUpdated,
   ) => {
-    const response = await fetch(`${siteUrl}/api/team/info`, {
+    const response = await fetch(`/api/team/info`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -254,15 +254,13 @@ export default async function ManagePage({ searchParams }) {
     }
     endpoint = endpoint.slice(0, -1);
 
-    const response = await fetch(
-      `${siteUrl}/api/team/last-updated?${endpoint}`,
-    );
+    const response = await fetch(`/api/team/last-updated?${endpoint}`);
 
     return response.json();
   };
 
   const getJoinedAt = async () => {
-    const response = await fetch(`${siteUrl}/api/team/last-joined`, {
+    const response = await fetch(`/api/team/last-joined`, {
       headers: {
         Authorization: `Bearer ${token.value}`,
         "Content-Type": "application/json",
@@ -295,7 +293,7 @@ export default async function ManagePage({ searchParams }) {
     }
     endpoint = endpoint.slice(0, -1);
 
-    return `${siteUrl}/api/team/last-updated?${endpoint}`;
+    return `/api/team/last-updated?${endpoint}`;
   };
 
   const response = await fetch(getLastUpdatedUrl(teamInfo));
