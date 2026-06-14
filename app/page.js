@@ -15,6 +15,7 @@ import Profile from "./components/Profile/Profile";
 import TeamSelector from "./components/TeamSelector/TeamSelector";
 import IssueSelector from "./components/IssueSelector/IssueSelector";
 import IssueStatus from "./components/IssueStatus/IssueStatus";
+import { getUserData as getUserDataService } from "@/services/calendar";
 
 const siteUrl =
   process.env.VERCEL_ENV === "production"
@@ -108,20 +109,7 @@ export default async function Home({ searchParams }) {
     getTeamMembers(),
   ]);
 
-  const userCalendarData = async (access_token, refresh_token, team_id) => {
-    const response = await fetch(`${siteUrl}/api/calendar/user`, {
-      method: "POST",
-      body: JSON.stringify({
-        access_token: access_token,
-        refresh_token: refresh_token,
-        team_id: team_id,
-      }),
-    });
-
-    return response.json();
-  };
-
-  const { response: userCalendarDataResponse } = await userCalendarData(
+  const userCalendarDataResponse = await getUserDataService(
     access_token.value,
     refresh_token.value,
     selectedTeam?.team_id,

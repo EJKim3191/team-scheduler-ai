@@ -7,6 +7,10 @@ import OverviewSection from "../components/Manage/OverviewSection";
 import TeamsSection from "../components/Manage/TeamsSection";
 import UsersSection from "../components/Manage/UsersSection";
 import SettingsSection from "../components/Manage/SettingsSection";
+import { getMyTeam as getMyTeamService } from "@/services/team";
+import { getTeamInfo as getTeamInfoService } from "@/services/team";
+import { getTeamJoinedAt as getTeamJoinedAtService } from "@/services/team";
+import { getTeamLastUpdated as getTeamLastUpdatedService } from "@/services/team";
 
 const MENU_ITEMS = [
   { key: "overview", label: "대시보드" },
@@ -211,95 +215,23 @@ export default async function ManagePage({ searchParams }) {
   const activeLabel =
     MENU_ITEMS.find((m) => m.key === activeTab)?.label ?? "대시보드";
 
-  const getMyTeam = async (access_token, refresh_token, joinedAt) => {
-    const response = await fetch(`${siteUrl}/api/team/my-teams`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        access_token: access_token,
-        refresh_token: refresh_token,
-        joined_at: joinedAt,
-      }),
-      cache: "force-cache",
-      next: { tags: [`menu-tab-${joinedAt}`] },
-    });
-    return response.json();
-  };
+  const joinedAt = await getTeamJoinedAtService(token.value);
 
-  const getTeamInfo = async (
-    access_token,
-    refresh_token,
-    myTeams,
-    lastUpdated,
-  ) => {
-    const response = await fetch(`${siteUrl}/api/team/info`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        access_token: access_token,
-        refresh_token: refresh_token,
-        myTeams: myTeams,
-        lastUpdated: lastUpdated,
-      }),
-      cache: "force-cache",
-      next: { tags: [`menu-tab-${lastUpdated}`] },
-    });
-    return response.json();
-  };
-
-  const getLastUpdated = async (teamInfo) => {
-    let endpoint = "";
-    for (const team of teamInfo) {
-      endpoint += `teamId=${team.team_id}&`;
-    }
-    endpoint = endpoint.slice(0, -1);
-
-    const response = await fetch(
-      `${siteUrl}/api/team/last-updated?${endpoint}`,
-    );
-
-    return response.json();
-  };
-
-  const getJoinedAt = async () => {
-    const response = await fetch(`${siteUrl}/api/team/last-joined`, {
-      headers: {
-        Authorization: `Bearer ${token.value}`,
-        "Content-Type": "application/json",
-      },
-    });
-    return response.json();
-  };
-
-  const joinedAt = await getJoinedAt();
-
-  const { teams: myTeamInfo } = await getMyTeam(
+  const { teams: myTeamInfo } = await getMyTeamService(
     token.value,
     refresh_token.value,
     joinedAt,
   );
 
-  const lastUpdated = await getLastUpdated(myTeamInfo);
+  const lastUpdated = await getTeamLastUpdatedService(myTeamInfo);
 
-  const { teams: teamInfo } = await getTeamInfo(
+  const { teams: teamInfo } = await getTeamInfoService(
     token.value,
     refresh_token.value,
+    true,
     myTeamInfo,
     lastUpdated,
   );
-
-  const getLastUpdatedUrl = (teamInfo) => {
-    let endpoint = "";
-    for (const team of teamInfo) {
-      endpoint += `teamId=${team.team_id}&`;
-    }
-    endpoint = endpoint.slice(0, -1);
-
-    return `${siteUrl}/api/team/last-updated?${endpoint}`;
-  };
-
-  const response = await fetch(getLastUpdatedUrl(teamInfo));
-  const data = await response.json();
 
   return (
     <div className={styles.page}>
