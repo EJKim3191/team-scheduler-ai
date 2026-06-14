@@ -3,7 +3,7 @@ import styles from "./Footer.module.css";
 export default function Footer() {
   return (
     <footer className={styles.footer}>
-      <span className={styles.version}>v0.1.6</span>
+      <span className={styles.version}>v0.1.61</span>
       <a
         className={styles.link}
         href="https://github.com/EJKim3191/team-scheduler-ai"
